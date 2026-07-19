@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
@@ -28,6 +29,23 @@ public class FreezerHandler {
     private final MemData memData;
     private final FreezeUtils freezeUtils;
 
+    /**
+     * v0.9.10 port fix (MAJOR-10/12): R4 完成标志.
+     * <p>
+     * 启动后 refreezeAll() 执行完毕置 true。在 r4Completed=false 期间：
+     * - freezerAppSet 已加载 background.conf 的 key
+     * - 但实际进程尚未物理冻结
+     * - BroadcastDeliverHook 应跳过 receiverList.clear()，避免误清空开机后首批广播
+     */
+    private static final AtomicBoolean r4Completed = new AtomicBoolean(false);
+
+    /**
+     * R4 是否已完成（供 BroadcastDeliverHook 在清空广播前守护判断）.
+     */
+    public static boolean isR4Completed() {
+        return r4Completed.get();
+    }
+
     public FreezerHandler(ClassLoader classLoader, MemData memData, FreezeUtils freezeUtils) {
         this.classLoader = classLoader;
         this.memData = memData;
@@ -48,6 +66,11 @@ public class FreezerHandler {
      */
     public void enableBootFreeze() {
         ThreadUtils.scheduleDelay(() -> {
+            // v0.9.10 port fix (MINOR-23): 防御 activityManagerService 未就绪时 NPE
+            if (memData.getActivityManagerService() == null) {
+                Log.w("Boot freeze: activityManagerService not ready, skip");
+                return;
+            }
             Log.i("Boot freeze start");
             // 获取包名分组进程
             Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
@@ -72,11 +95,11 @@ public class FreezerHandler {
                 });
             }
             Log.d("Frozen app list: " + frozenApps);
-            // 冻结的APP加入冻结列表
-            memData.getFreezerAppSet().addAll(frozenApps);
-            // v0.9.10 port: 持久化启动冻结结果
+            // v0.9.10 port fix (MINOR-13): 逐 key 添加并判断是否新增，避免 background.conf 重复行
             for (String key : frozenApps) {
-                FreezerConfig.appendBackground(key);
+                if (memData.getFreezerAppSet().add(key)) {
+                    FreezerConfig.appendBackground(key);
+                }
             }
         }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.BootFreezeDelay, "1")));
         Log.i("Boot freeze");
@@ -87,6 +110,11 @@ public class FreezerHandler {
      */
     public void enableIntervalFreeze() {
         ThreadUtils.scheduleInterval(() -> {
+            // v0.9.10 port fix (MINOR-23): 防御 activityManagerService 未就绪时 NPE
+            if (memData.getActivityManagerService() == null) {
+                Log.w("Interval freeze: activityManagerService not ready, skip");
+                return;
+            }
             Log.i("Interval freeze start");
             // 获取包名分组进程
             Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
@@ -115,11 +143,11 @@ public class FreezerHandler {
                 });
             }
             Log.d("Frozen app list: " + frozenApps);
-            // 冻结的APP加入冻结列表
-            memData.getFreezerAppSet().addAll(frozenApps);
-            // v0.9.10 port: 持久化定时冻结结果
+            // v0.9.10 port fix (MINOR-13): 逐 key 添加并判断是否新增，避免 background.conf 重复行
             for (String key : frozenApps) {
-                FreezerConfig.appendBackground(key);
+                if (memData.getFreezerAppSet().add(key)) {
+                    FreezerConfig.appendBackground(key);
+                }
             }
         }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.IntervalFreezeDelay, "1")));
         Log.i("Interval freeze");
@@ -409,6 +437,11 @@ public class FreezerHandler {
                 Log.i("R4: refreeze complete, refrozen=" + refrozen + " skipped=" + skipped + " removed=" + removed);
             } catch (Throwable throwable) {
                 Log.e("R4: refreeze failed", throwable);
+            } finally {
+                // v0.9.10 port fix (MAJOR-10/12): 无论 R4 成功或失败都标记完成，结束窗口期
+                // 避免BroadcastDeliverHook 永久跳过 clear() 导致冻结应用永久接收广播
+                r4Completed.set(true);
+                Log.i("R4: window period ended, broadcast guard released");
             }
         });
     }

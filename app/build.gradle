@@ -4,9 +4,14 @@ plugins {
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 32
+    namespace 'cn.myflv.noactive'
+    compileSdk 36
 
-    lintOptions {
+    buildFeatures {
+        aidl true
+    }
+
+    lint {
         checkReleaseBuilds false
         abortOnError false
     }
@@ -14,7 +19,7 @@ android {
     defaultConfig {
         applicationId "cn.myflv.noactive"
         minSdk 29
-        targetSdk 32
+        targetSdk 36
         versionCode 266
         versionName "2.7-Alpha"
     }
@@ -28,8 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.majorVersion
     }
 
     android.applicationVariants.all {
@@ -47,13 +55,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation project(':blockmiui')
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation "androidx.core:core-ktx:1.8.0"
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    implementation "androidx.core:core-ktx:1.18.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     def libsuVersion = '5.0.3'
