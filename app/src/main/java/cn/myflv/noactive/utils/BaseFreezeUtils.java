@@ -5,10 +5,14 @@ import android.util.Log;
 
 import com.topjohnwu.superuser.Shell;
 import com.topjohnwu.superuser.io.SuFile;
+import com.topjohnwu.superuser.io.SuFileInputStream;
 import com.topjohnwu.superuser.io.SuFileOutputStream;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import cn.myflv.noactive.constant.ClassConstants;
@@ -104,7 +108,11 @@ public class BaseFreezeUtils {
     }
 
     private static boolean setFreezeAction(boolean su, int pid, int uid, boolean action) {
-        String path = freezerPath + "/uid_" + uid + "/pid_" + pid + "/cgroup.freeze";
+        // v6 fix: App Zygote 机制下 cgroup 路径不匹配，三策略解析真实路径
+        // 策略1: 读 /proc/<pid>/cgroup 拿真实路径
+        // 策略2: 扫描 uid_<uid>/pid_*/cgroup.procs 找匹配 pid
+        // 策略3: 兜底硬编码（原直接拼路径）
+        String path = resolveCgroupFreezePath(su, pid, uid);
         try {
             PrintWriter writer = getWriter(su, path);
             if (action) {
@@ -118,6 +126,172 @@ public class BaseFreezeUtils {
             Log.e(TAG, "Freezer V2 failed: " + e.getMessage());
             // v0.9.10 port: V2 cgroup 写入失败时回退到系统 API Process.setProcessFrozen
             return fallbackToApi(pid, uid, action);
+        }
+    }
+
+    /**
+     * v6: 三策略解析 cgroup.freeze 真实路径.
+     * <p>
+     * App Zygote 机制下，子进程的真实 cgroup 路径可能与父进程不一致，
+     * 直接拼 {@code /sys/fs/cgroup/apps/uid_<uid>/pid_<pid>/cgroup.freeze} 常找不到节点。
+     * 按以下顺序解析：
+     * <ol>
+     *   <li>策略1: 读 /proc/&lt;pid&gt;/cgroup 拿真实路径（最准确）</li>
+     *   <li>策略2: 扫描 freezerPath/uid_xxx/pid_xxx/cgroup.procs 找匹配 pid</li>
+     *   <li>策略3: 兜底硬编码（原直接拼路径，保留向后兼容）</li>
+     * </ol>
+     *
+     * @return cgroup.freeze 完整路径
+     */
+    private static String resolveCgroupFreezePath(boolean su, int pid, int uid) {
+        // 策略1: 读 /proc/<pid>/cgroup
+        String path = resolveCgroupFreezePathByProc(su, pid, uid);
+        if (path != null) {
+            return path;
+        }
+
+        // 策略2: 扫描 pid_*/cgroup.procs
+        path = resolveCgroupFreezePathByScan(su, pid, uid);
+        if (path != null) {
+            return path;
+        }
+
+        // 策略3: 兜底硬编码
+        path = freezerPath + "/uid_" + uid + "/pid_" + pid + "/cgroup.freeze";
+        Log.w(TAG, "Freezer V2 path resolution fallback to hardcoded: " + path);
+        return path;
+    }
+
+    /**
+     * v6 策略1: 读 /proc/&lt;pid&gt;/cgroup 拿真实路径.
+     * <p>
+     * cgroup v2 下 /proc/&lt;pid&gt;/cgroup 文件格式:
+     * <pre>0::/uid_10356/pid_25139</pre>
+     * 提取 :: 之后的子路径，拼接到 freezerPath + 子路径 + /cgroup.freeze.
+     *
+     * @return 成功返回完整路径；失败返回 null
+     */
+    private static String resolveCgroupFreezePathByProc(boolean su, int pid, int uid) {
+        String procCgroupPath = "/proc/" + pid + "/cgroup";
+        BufferedReader reader = getReader(su, procCgroupPath);
+        if (reader == null) {
+            return null;
+        }
+        try {
+            String line;
+            String subPath = null;
+            while ((line = reader.readLine()) != null) {
+                // cgroup v2 格式: 0::/uid_xxx/pid_xxx
+                // cgroup v1 格式: 2:freezer:/path（含冒号，但不是 ::）
+                int idx = line.indexOf("::");
+                if (idx >= 0 && idx + 2 < line.length()) {
+                    subPath = line.substring(idx + 2).trim();
+                    break;
+                }
+            }
+            reader.close();
+            if (subPath == null || subPath.isEmpty() || "/".equals(subPath)) {
+                return null;
+            }
+            // 去除开头的 /
+            if (subPath.startsWith("/")) {
+                subPath = subPath.substring(1);
+            }
+            String freezePath = freezerPath + "/" + subPath + "/cgroup.freeze";
+            if (pathExist(su, freezePath)) {
+                Log.d(TAG, "Freezer V2 path resolved via /proc: " + freezePath);
+                return freezePath;
+            }
+            // /proc 拿到的路径在 freezerPath 下不存在，可能 freezerPath 不是真正的根。
+            // 尝试直接用 subPath 拼接到 /sys/fs/cgroup
+            String altPath = "/sys/fs/cgroup/" + subPath + "/cgroup.freeze";
+            if (pathExist(su, altPath)) {
+                Log.d(TAG, "Freezer V2 path resolved via /proc (alt root): " + altPath);
+                return altPath;
+            }
+            return null;
+        } catch (Exception e) {
+            Log.d(TAG, "Read /proc/" + pid + "/cgroup failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * v6 策略2: 扫描 uid_xxx/pid_xxx/cgroup.procs 找匹配 pid.
+     * <p>
+     * 遍历 freezerPath/uid_xxx/ 下所有 pid_xxx 目录，
+     * 读取每个 pid_xxx/cgroup.procs 文件，找哪个文件包含目标 pid.
+     *
+     * @return 成功返回完整路径；失败返回 null
+     */
+    private static String resolveCgroupFreezePathByScan(boolean su, int pid, int uid) {
+        String uidDir = freezerPath + "/uid_" + uid;
+        if (!pathExist(su, uidDir)) {
+            return null;
+        }
+        File uidDirFile = su ? SuFile.open(uidDir) : new File(uidDir);
+        File[] pidDirs = uidDirFile.listFiles();
+        if (pidDirs == null || pidDirs.length == 0) {
+            return null;
+        }
+        String matchPath = null;
+        for (File pidDir : pidDirs) {
+            if (pidDir == null) {
+                continue;
+            }
+            String name = pidDir.getName();
+            if (!name.startsWith("pid_")) {
+                continue;
+            }
+            String procsPath = pidDir.getAbsolutePath() + "/cgroup.procs";
+            if (!pathExist(su, procsPath)) {
+                continue;
+            }
+            BufferedReader reader = getReader(su, procsPath);
+            if (reader == null) {
+                continue;
+            }
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        if (Integer.parseInt(line.trim()) == pid) {
+                            matchPath = pidDir.getAbsolutePath() + "/cgroup.freeze";
+                            break;
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            } catch (Exception e) {
+                // 此 pid_* 目录读取失败，跳过
+            } finally {
+                try {
+                    reader.close();
+                } catch (Exception ignored) {
+                }
+            }
+            if (matchPath != null) {
+                break;
+            }
+        }
+        if (matchPath != null) {
+            Log.d(TAG, "Freezer V2 path resolved via scan: " + matchPath + " (pid in pid_*/cgroup.procs)");
+        }
+        return matchPath;
+    }
+
+    /**
+     * 获取 BufferedReader（支持 su 和非 su 模式）.
+     */
+    private static BufferedReader getReader(boolean su, String path) {
+        try {
+            if (su) {
+                return new BufferedReader(new InputStreamReader(SuFileInputStream.open(path)));
+            } else {
+                return new BufferedReader(new FileReader(path));
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 
