@@ -1,17 +1,23 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/gradle-plugins/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/google/' }
+        maven { url "https://api.xposed.info/" }
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
-        google()
-        mavenCentral()
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/google/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
         maven { url "https://api.xposed.info/" }
         maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
     }
 }
 rootProject.name = "NoActive"

@@ -234,7 +234,11 @@ public class FreezerConfig {
         PrintWriter writer = null;
         try {
             if (!configDir.exists()) {
-                configDir.mkdir();
+                // v0.9.10 port fix (MINOR-21): 检查 mkdir 返回值，失败时显式日志
+                if (!configDir.mkdir()) {
+                    Log.e("background.conf append failed: config dir create failed: " + dir);
+                    return;
+                }
             }
             if (!backgroundFile.exists()) {
                 backgroundFile.createNewFile();
@@ -268,6 +272,8 @@ public class FreezerConfig {
         if (!backgroundFile.exists()) {
             return;
         }
+        // v0.9.10 port fix (MINOR-14): 临时文件 + rename 原子写入，避免进程崩溃损坏文件
+        File tempFile = new File(dir, backgroundConf + ".tmp");
         List<String> remaining = new ArrayList<>();
         BufferedReader reader = null;
         PrintWriter writer = null;
@@ -281,9 +287,22 @@ public class FreezerConfig {
             }
             reader.close();
             reader = null;
-            writer = new PrintWriter(new FileWriter(backgroundFile, false));
+            writer = new PrintWriter(new FileWriter(tempFile, false));
             for (String entry : remaining) {
                 writer.println(entry);
+            }
+            writer.close();
+            writer = null;
+            // 同分区 rename 是原子操作，确保崩溃时不会留下截断的 background.conf
+            if (!tempFile.renameTo(backgroundFile)) {
+                // fallback：先删除原文件再 rename
+                if (backgroundFile.delete()) {
+                    if (!tempFile.renameTo(backgroundFile)) {
+                        Log.e("background.conf remove failed: rename fallback failed");
+                    }
+                } else {
+                    Log.e("background.conf remove failed: delete original failed");
+                }
             }
         } catch (IOException e) {
             Log.e("background.conf remove failed: " + e.getMessage());
@@ -296,6 +315,10 @@ public class FreezerConfig {
             }
             if (writer != null) {
                 writer.close();
+            }
+            // 清理可能的残留临时文件
+            if (tempFile.exists()) {
+                tempFile.delete();
             }
         }
     }
