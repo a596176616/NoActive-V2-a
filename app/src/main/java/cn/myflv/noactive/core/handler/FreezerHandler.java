@@ -74,6 +74,10 @@ public class FreezerHandler {
             Log.d("Frozen app list: " + frozenApps);
             // 冻结的APP加入冻结列表
             memData.getFreezerAppSet().addAll(frozenApps);
+            // v0.9.10 port: 持久化启动冻结结果
+            for (String key : frozenApps) {
+                FreezerConfig.appendBackground(key);
+            }
         }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.BootFreezeDelay, "1")));
         Log.i("Boot freeze");
     }
@@ -113,6 +117,10 @@ public class FreezerHandler {
             Log.d("Frozen app list: " + frozenApps);
             // 冻结的APP加入冻结列表
             memData.getFreezerAppSet().addAll(frozenApps);
+            // v0.9.10 port: 持久化定时冻结结果
+            for (String key : frozenApps) {
+                FreezerConfig.appendBackground(key);
+            }
         }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.IntervalFreezeDelay, "1")));
         Log.i("Interval freeze");
     }
@@ -178,7 +186,10 @@ public class FreezerHandler {
             // 解冻
             freezeUtils.unFreezer(targetProcessRecords);
             // 移除被冻结APP
-            memData.getFreezerAppSet().remove(appInfo.getKey());
+            if (memData.getFreezerAppSet().remove(appInfo.getKey())) {
+                // v0.9.10 port: 同步移除 background.conf 持久化记录
+                FreezerConfig.removeBackground(appInfo.getKey());
+            }
             if (Thread.currentThread().isInterrupted()) {
                 Log.d(appInfo.getKey() + " event updated");
                 return;
@@ -221,7 +232,10 @@ public class FreezerHandler {
                 return;
             }
             // 后台应用添加包名
-            memData.getFreezerAppSet().add(appInfo.getKey());
+            if (memData.getFreezerAppSet().add(appInfo.getKey())) {
+                // v0.9.10 port: 同步追加 background.conf 持久化记录
+                FreezerConfig.appendBackground(appInfo.getKey());
+            }
             // 等待应用未执行广播
             boolean broadcastIdle = memData.waitBroadcastIdle(appInfo);
             if (!broadcastIdle) {
@@ -319,6 +333,83 @@ public class FreezerHandler {
         Log.i(appInfo.getKey() + " " + reason);
         onResume(true, appInfo, true, () -> {
             onPause(true, appInfo, 3000);
+        });
+    }
+
+    /**
+     * v0.9.10 port: R4 一次性重新冻结.
+     * <p>
+     * 启动后第一次发生 Activity 切换时触发：
+     * 遍历 freezerAppSet 中的"应已冻结"应用，
+     * <ul>
+     *   <li>前台应用：从集合移除 + 移除 background.conf 记录</li>
+     *   <li>后台应用：重新执行冻结，确保进程真正进入 cgroup freezer</li>
+     * </ul>
+     * 该方法只执行一次（由 ActivitySwitchHook.sRefrozen 控制）。
+     */
+    public void refreezeAll() {
+        ThreadUtils.newThread(() -> {
+            try {
+                if (memData.getActivityManagerService() == null) {
+                    Log.w("R4: activityManagerService not ready, skip");
+                    return;
+                }
+                Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
+                // 拷贝快照避免并发修改
+                List<String> keys = new ArrayList<>(memData.getFreezerAppSet());
+                if (keys.isEmpty()) {
+                    Log.i("R4: no background apps to refreeze");
+                    return;
+                }
+                Log.i("R4: start refreeze " + keys.size() + " background apps");
+                int refrozen = 0;
+                int skipped = 0;
+                int removed = 0;
+                for (String key : keys) {
+                    try {
+                        AppInfo appInfo = AppInfo.getInstance(key);
+                        // 前台应用：从冻结集合移除 + 同步 background.conf
+                        if (isAppForeground(appInfo)) {
+                            if (memData.getFreezerAppSet().remove(key)) {
+                                FreezerConfig.removeBackground(key);
+                                removed++;
+                            }
+                            Log.d("R4: " + key + " is foreground, removed from background set");
+                            continue;
+                        }
+                        // 后台应用：重新冻结
+                        List<ProcessRecord> processRecords = processMap.get(appInfo.getPackageName());
+                        if (processRecords == null || processRecords.isEmpty()) {
+                            Log.d("R4: " + key + " has no running processes, skip");
+                            skipped++;
+                            continue;
+                        }
+                        boolean refrozenThis = false;
+                        for (ProcessRecord processRecord : processRecords) {
+                            if (!memData.isTargetProcess(appInfo.getUserId(), processRecord)) {
+                                continue;
+                            }
+                            try {
+                                freezeUtils.freezer(processRecord);
+                                Log.d("R4: refrozen " + processRecord.getProcessName() + " (pid=" + processRecord.getPid() + ")");
+                                refrozenThis = true;
+                            } catch (Throwable throwable) {
+                                Log.e("R4: refreeze " + processRecord.getProcessName() + " failed", throwable);
+                            }
+                        }
+                        if (refrozenThis) {
+                            refrozen++;
+                        } else {
+                            skipped++;
+                        }
+                    } catch (Throwable throwable) {
+                        Log.e("R4: refreeze " + key + " failed", throwable);
+                    }
+                }
+                Log.i("R4: refreeze complete, refrozen=" + refrozen + " skipped=" + skipped + " removed=" + removed);
+            } catch (Throwable throwable) {
+                Log.e("R4: refreeze failed", throwable);
+            }
         });
     }
 

@@ -45,6 +45,8 @@ public class FreezeUtils {
     public FreezeUtils(ClassLoader classLoader, MemData memData) {
         this.classLoader = classLoader;
         this.memData = memData;
+        // v0.9.10 port: 初始化 BaseFreezeUtils 的 classLoader，使 V2 写入失败时能 fallback 到系统 API
+        BaseFreezeUtils.setClassLoader(classLoader);
         String freezerVersion = FreezerConfig.getFreezerVersion(classLoader);
         switch (freezerVersion) {
             case FreezerConfig.API:

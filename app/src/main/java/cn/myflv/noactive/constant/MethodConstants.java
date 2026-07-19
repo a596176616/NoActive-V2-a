@@ -79,4 +79,7 @@ public interface MethodConstants {
     String addPowerSaveWhitelistAppInternal = "addPowerSaveWhitelistAppInternal";
     String removeLocked = "removeLocked";
     String reportBinderState = "reportBinderState";
+
+    // v0.9.10 port: SDK 34+ BroadcastQueueImpl 新增方法（替代 deliverToRegisteredReceiverLocked）
+    String dispatchReceivers = "dispatchReceivers";
 }

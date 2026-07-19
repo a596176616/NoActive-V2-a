@@ -11,6 +11,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import cn.myflv.noactive.constant.ClassConstants;
+import cn.myflv.noactive.constant.MethodConstants;
+import de.robv.android.xposed.XposedHelpers;
+
 
 public class BaseFreezeUtils {
 
@@ -32,6 +36,21 @@ public class BaseFreezeUtils {
     private static final String[] FREEZER_PATH_ENUM = {"/sys/fs/cgroup", "/dev/freezer", "/dev/cg2_bpf"};
     private static Boolean commonV2 = null;
     private static String freezerPath = null;
+
+    /**
+     * v0.9.10 port: 静态持有 classLoader 用于 fallbackToApi.
+     * <p>
+     * 当 V2 cgroup 路径写入失败时（如 HyperOS 3.0 路径变更或权限问题），
+     * 回退到系统 API Process.setProcessFrozen 来完成冻结/解冻。
+     */
+    private static ClassLoader sClassLoader = null;
+
+    /**
+     * v0.9.10 port: 初始化 classLoader，应在模块启动早期由 FreezeUtils 构造器调用.
+     */
+    public static void setClassLoader(ClassLoader classLoader) {
+        sClassLoader = classLoader;
+    }
 
     private synchronized static boolean isCommonV2(boolean su) {
         if (commonV2 != null) {
@@ -97,8 +116,33 @@ public class BaseFreezeUtils {
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Freezer V2 failed: " + e.getMessage());
+            // v0.9.10 port: V2 cgroup 写入失败时回退到系统 API Process.setProcessFrozen
+            return fallbackToApi(pid, uid, action);
         }
-        return false;
+    }
+
+    /**
+     * v0.9.10 port: V2 写入失败时回退到系统 API (Process.setProcessFrozen).
+     * <p>
+     * 该方法通过反射调用 android.os.Process.setProcessFrozen，
+     * 需要 classLoader 已通过 {@link #setClassLoader(ClassLoader)} 初始化。
+     *
+     * @return true 表示 API 调用成功；false 表示 classLoader 未初始化或 API 调用失败
+     */
+    private static boolean fallbackToApi(int pid, int uid, boolean frozen) {
+        if (sClassLoader == null) {
+            Log.e(TAG, "Freezer API fallback skipped: classLoader not initialized");
+            return false;
+        }
+        try {
+            Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, sClassLoader);
+            XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
+            Log.i(TAG, "Freezer V2 fallback to API succeeded: pid=" + pid + " uid=" + uid + " frozen=" + frozen);
+            return true;
+        } catch (Throwable e) {
+            Log.e(TAG, "Freezer API fallback failed: " + e.getMessage());
+            return false;
+        }
     }
 
     public static boolean thawPid(boolean su, int pid, int uid) {

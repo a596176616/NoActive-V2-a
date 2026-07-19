@@ -119,6 +119,12 @@ public class MemData {
         fileObserver = new ConfigFileObserver(this);
         // 开始监听配置文件
         fileObserver.startWatching();
+        // v0.9.10 port: 从 background.conf 恢复持久化的已冻结应用列表，确保重启后 R4 refreeze 仍能恢复
+        Set<String> savedBackground = FreezerConfig.loadBackground();
+        if (!savedBackground.isEmpty()) {
+            freezerAppSet.addAll(savedBackground);
+            Log.i("R4: restored " + savedBackground.size() + " frozen apps from background.conf");
+        }
     }
 
     public void notifyConfigChanged() {
