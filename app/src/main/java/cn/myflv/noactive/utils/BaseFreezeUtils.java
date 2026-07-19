@@ -37,7 +37,21 @@ public class BaseFreezeUtils {
     private static final String UID_SYSTEM = "/uid_1000";
     private static final String FROZEN_PATH = "/frozen/cgroup.procs";
     private static final String UNFROZEN_PATH = "/unfrozen/cgroup.procs";
-    private static final String[] FREEZER_PATH_ENUM = {"/sys/fs/cgroup", "/dev/freezer", "/dev/cg2_bpf"};
+    /**
+     * v0.9.10 port fix (CRITICAL-02): HyperOS cgroup v2 路径适配.
+     * <p>
+     * HyperOS 把 AOSP 标准的 /sys/fs/cgroup/apps/uid_X/pid_X/cgroup.freeze
+     * 改成了 /sys/fs/cgroup/system/uid_X/pid_X/cgroup.freeze。
+     * v0.9.10 反编译代码硬编码 apps 路径，在 HyperOS 上全部 ENOENT 失败。
+     * V2 移植版补上 system 路径，并优先探测。
+     */
+    private static final String[] FREEZER_PATH_ENUM = {
+            "/sys/fs/cgroup/system",  // HyperOS 路径（优先探测）
+            "/sys/fs/cgroup/apps",    // AOSP 标准路径
+            "/sys/fs/cgroup",         // 通用 fallback（让策略1 /proc 解析子路径）
+            "/dev/freezer",
+            "/dev/cg2_bpf"
+    };
     private static Boolean commonV2 = null;
     private static String freezerPath = null;
 
@@ -72,9 +86,13 @@ public class BaseFreezeUtils {
                 return commonV2;
             }
         }
+        // v0.9.10 port fix (CRITICAL-02): HyperOS fallback.
+        // 所有探测路径都未命中时，默认走 V2 + /sys/fs/cgroup 根路径，
+        // 让策略1（/proc/<pid>/cgroup）解析真实子路径。
+        // 原 bug: 此处 commonV2=true 但 return false，导致走 V1 路径，V1 路径在 HyperOS 上也不存在。
         commonV2 = true;
-        freezerPath = FREEZER_PATH_ENUM[0];
-        return false;
+        freezerPath = FREEZER_PATH_ENUM[2]; // "/sys/fs/cgroup"
+        return commonV2;
     }
 
     private static boolean pathExist(boolean su, String path) {
@@ -125,7 +143,37 @@ public class BaseFreezeUtils {
         } catch (Exception e) {
             Log.e(TAG, "Freezer V2 failed: " + e.getMessage());
             // v0.9.10 port: V2 cgroup 写入失败时回退到系统 API Process.setProcessFrozen
-            return fallbackToApi(pid, uid, action);
+            if (fallbackToApi(pid, uid, action)) {
+                return true;
+            }
+            // v0.9.10 port fix (CRITICAL-03): API 也失败时最终 fallback 到 SIGSTOP/SIGCONT.
+            // HyperOS 上 PowerMillet 开启会导致 Framework CachedAppOptimizer useFreezer=false，
+            // Process.setProcessFrozen 抛 IllegalArgumentException("Invalid argument").
+            // v0.9.10 反编译代码的 fallback 链：V2 写节点 → API → SIGSTOP，
+            // 移植版之前丢了最后一环，本补丁恢复 SIGSTOP 兜底。
+            return fallbackToSignal(pid, action);
+        }
+    }
+
+    /**
+     * v0.9.10 port fix (CRITICAL-03): SIGSTOP/SIGCONT 信号兜底冻结.
+     * <p>
+     * 当 V2 cgroup 写入和 Process.setProcessFrozen API 都失败时，
+     * 用 Process.sendSignal(pid, SIG_STOP) 停止进程，
+     * 用 Process.sendSignal(pid, SIG_CONT) 恢复进程。
+     * 这是 v0.9.10 反编译代码 FreezeUtils.java 的最终 fallback，
+     * 也是最不依赖厂商路径的方式。
+     */
+    private static boolean fallbackToSignal(int pid, boolean frozen) {
+        try {
+            int sig = frozen ? SIG_STOP : SIG_CONT;
+            Process.sendSignal(pid, sig);
+            Log.i(TAG, "Freezer fallback to SIG" + (frozen ? "STOP" : "CONT")
+                    + " succeeded: pid=" + pid);
+            return true;
+        } catch (Throwable e) {
+            Log.e(TAG, "Freezer SIG fallback failed: " + e.getMessage());
+            return false;
         }
     }
 
