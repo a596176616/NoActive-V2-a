@@ -144,9 +144,15 @@ public class FreezeUtils {
         int pid = processRecord.getPid();
         int uid = processRecord.getUid();
         ThreadUtils.runNoThrow(() -> {
-            Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, classLoader);
-            XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
-            Log.d((frozen ? "freeze" : "unfreeze") + " " + processRecord.getProcessNameWithUser());
+            // v0.9.10 port fix (MINOR-09): 显式 try-catch + Log.e，
+            // 避免 ThreadUtils.runNoThrow 静默吞掉 SELinux 拦截 / 方法签名变更等异常
+            try {
+                Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, classLoader);
+                XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
+                Log.d((frozen ? "freeze" : "unfreeze") + " " + processRecord.getProcessNameWithUser());
+            } catch (Throwable throwable) {
+                Log.e("setProcessFrozen failed (pid=" + pid + ", uid=" + uid + ", frozen=" + frozen + ")", throwable);
+            }
         });
 
     }

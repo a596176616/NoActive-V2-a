@@ -10,6 +10,7 @@ import cn.myflv.noactive.constant.FieldConstants;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.entity.AppInfo;
 import cn.myflv.noactive.core.entity.MemData;
+import cn.myflv.noactive.core.handler.FreezerHandler;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.BroadcastFilter;
@@ -152,6 +153,14 @@ public class BroadcastDeliverHook extends MethodHook {
                 // 不是冻结APP就不处理
                 if (!memData.getFreezerAppSet().contains(appInfo.getKey())) {
                     // 意味着广播执行
+                    broadcastStart(param, appInfo);
+                    return;
+                }
+
+                // v0.9.10 port fix (MAJOR-10/12): R4 窗口期守护
+                // 启动后 refreezeAll 完成前，freezerAppSet 已加载 background.conf 的 key
+                // 但实际进程尚未物理冻结，此时不应清空广播（避免开机后首批广播丢失）
+                if (!FreezerHandler.isR4Completed()) {
                     broadcastStart(param, appInfo);
                     return;
                 }
