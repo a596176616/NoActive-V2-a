@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.myflv.noactive.FreezerInterface;
@@ -16,7 +17,6 @@ import cn.myflv.noactive.core.error.FreezeFailedException;
 import cn.myflv.noactive.core.error.UnKnowException;
 import cn.myflv.noactive.core.server.ProcessRecord;
 import cn.myflv.noactive.utils.BaseFreezeUtils;
-import de.robv.android.xposed.XposedHelpers;
 
 public class FreezeUtils {
     private final static int BINDER_FREEZE_TRY = 3;
@@ -146,9 +146,12 @@ public class FreezeUtils {
         ThreadUtils.runNoThrow(() -> {
             // v0.9.10 port fix (MINOR-09): 显式 try-catch + Log.e，
             // 避免 ThreadUtils.runNoThrow 静默吞掉 SELinux 拦截 / 方法签名变更等异常
+            // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
             try {
-                Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, classLoader);
-                XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
+                Class<?> Process = Class.forName(ClassConstants.Process, false, classLoader);
+                Method setProcessFrozen = Process.getDeclaredMethod(MethodConstants.setProcessFrozen, int.class, int.class, boolean.class);
+                setProcessFrozen.setAccessible(true);
+                setProcessFrozen.invoke(null, pid, uid, frozen);
                 Log.d((frozen ? "freeze" : "unfreeze") + " " + processRecord.getProcessNameWithUser());
             } catch (Throwable throwable) {
                 Log.e("setProcessFrozen failed (pid=" + pid + ", uid=" + uid + ", frozen=" + frozen + ")", throwable);
@@ -161,13 +164,20 @@ public class FreezeUtils {
     public void freezeBinder(ProcessRecord processRecord, boolean frozen) {
         int pid = processRecord.getPid();
         ThreadUtils.runNoThrow(() -> {
-            Class<?> CachedAppOptimizer = XposedHelpers.findClass(ClassConstants.CachedAppOptimizer, classLoader);
-            for (int i = 0; i < BINDER_FREEZE_TRY; i++) {
-                int result = (int) XposedHelpers.callStaticMethod(CachedAppOptimizer, MethodConstants.freezeBinder, pid, frozen);
-                if (result == 0) {
-                    Log.d((frozen ? "freeze" : "unfreeze") + " binder " + processRecord.getProcessNameWithUser());
-                    return;
+            // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
+            try {
+                Class<?> CachedAppOptimizer = Class.forName(ClassConstants.CachedAppOptimizer, false, classLoader);
+                Method freezeBinderMethod = CachedAppOptimizer.getDeclaredMethod(MethodConstants.freezeBinder, int.class, boolean.class);
+                freezeBinderMethod.setAccessible(true);
+                for (int i = 0; i < BINDER_FREEZE_TRY; i++) {
+                    int result = (int) freezeBinderMethod.invoke(null, pid, frozen);
+                    if (result == 0) {
+                        Log.d((frozen ? "freeze" : "unfreeze") + " binder " + processRecord.getProcessNameWithUser());
+                        return;
+                    }
                 }
+            } catch (Throwable throwable) {
+                Log.e("freezeBinder failed (pid=" + pid + ", frozen=" + frozen + ")", throwable);
             }
         });
     }
