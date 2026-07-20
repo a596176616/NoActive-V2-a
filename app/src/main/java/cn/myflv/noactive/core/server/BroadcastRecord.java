@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 /**
@@ -23,7 +23,7 @@ public class BroadcastRecord {
         this.receivers = new ArrayList<>();
         if (broadcastRecord == null) return;
         try {
-            Object fieldReceivers = XposedHelpers.getObjectField(broadcastRecord, "receivers");
+            Object fieldReceivers = ReflectionUtils.getObjectField(broadcastRecord, "receivers");
             if (fieldReceivers instanceof List) {
                 Iterator<Object> iterator = ((List<Object>) fieldReceivers).iterator();
                 while (iterator.hasNext()) {
