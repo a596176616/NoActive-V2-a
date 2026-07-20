@@ -7,7 +7,7 @@ import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.GreezeManagerService;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 public class GreezeHook extends MethodHook {
 
@@ -34,12 +34,13 @@ public class GreezeHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void afterMethod(MethodHookParam param) throws Throwable {
-                GreezeManagerService greezeManagerService = new GreezeManagerService(param.thisObject);
+            protected Object afterMethod(XposedInterface.Chain chain, Object result) throws Throwable {
+                GreezeManagerService greezeManagerService = new GreezeManagerService(chain.getThisObject());
                 memData.setGreezeManagerService(greezeManagerService);
+                return result;
             }
         };
     }
