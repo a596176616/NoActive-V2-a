@@ -34,7 +34,9 @@ public class AndroidHook extends AbstractAppHook {
 
     @Override
     public String getTargetPackageName() {
-        return "android";
+        // LSPosed API 102: system_server 的包名为 "system"（旧 API 时代的 "android" 已废弃）
+        // 参考 https://docs.lsposed.org/release/api_changes
+        return "system";
     }
 
     @Override
