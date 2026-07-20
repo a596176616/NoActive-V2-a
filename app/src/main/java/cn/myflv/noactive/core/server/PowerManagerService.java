@@ -9,7 +9,7 @@ import cn.myflv.noactive.constant.FieldConstants;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.entity.AppInfo;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -19,7 +19,7 @@ public class PowerManagerService {
 
     public PowerManagerService(Object powerManagerService) {
         this.instance = powerManagerService;
-        this.wakeLocks = XposedHelpers.getObjectField(powerManagerService, FieldConstants.mWakeLocks);
+        this.wakeLocks = ReflectionUtils.getObjectField(powerManagerService, FieldConstants.mWakeLocks);
     }
 
 
@@ -48,7 +48,7 @@ public class PowerManagerService {
         for (WakeLock wakeLock : wakeLocks) {
             String tag = wakeLock.getPackageName() + ":" + appInfo.getUserId() + "(" + wakeLock.getTag() + ")";
             try {
-                XposedHelpers.callMethod(instance, MethodConstants.releaseWakeLockInternal, wakeLock.getLock(), wakeLock.getFlags());
+                ReflectionUtils.callMethod(instance, MethodConstants.releaseWakeLockInternal, wakeLock.getLock(), wakeLock.getFlags());
                 Log.d(tag + " wakelock released");
             } catch (Throwable throwable) {
                 Log.w(tag + " wakelock released", throwable);
