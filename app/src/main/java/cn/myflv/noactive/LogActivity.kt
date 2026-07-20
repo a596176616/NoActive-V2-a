@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.DocumentsContract
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -16,7 +17,11 @@ import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * 模块日志查看页.
@@ -178,16 +183,99 @@ class LogActivity : AppCompatActivity() {
     }
 
     /**
-     * SAF 选目录回调（占位）.
+     * SAF 选目录回调：合并 current.log + last.log 写入选定目录.
      *
-     * 当前仅 Toast 显示选中目录的 URI，下一步会替换为合并 current.log + last.log 后写入.
+     * 自动命名格式：NoActive_log_<yyyyMMdd_HHmmss>.log
+     * 文件内部分两段，用 "===== current.log =====" / "===== last.log =====" 标题分隔.
      * 用户取消选择时 uri == null，静默忽略.
      */
     private fun onExportDirSelected(uri: Uri?) {
         if (uri == null) {
             return
         }
-        Toast.makeText(this, "Selected: $uri", Toast.LENGTH_LONG).show()
+        Thread {
+            try {
+                val logDir = cn.myflv.noactive.core.utils.FreezerConfig.LogDir
+                val currentContent = readLogForExport("$logDir/current.log")
+                val lastContent = readLogForExport("$logDir/last.log")
+
+                if (currentContent.isEmpty() && lastContent.isEmpty()) {
+                    handler.post {
+                        Toast.makeText(this, getString(R.string.log_export_empty), Toast.LENGTH_SHORT).show()
+                    }
+                    return@Thread
+                }
+
+                val sb = StringBuilder()
+                sb.append("===== current.log =====\n")
+                sb.append(currentContent)
+                if (currentContent.isNotEmpty() && !currentContent.endsWith('\n')) {
+                    sb.append('\n')
+                }
+                sb.append("\n===== last.log =====\n")
+                sb.append(lastContent)
+                if (lastContent.isNotEmpty() && !lastContent.endsWith('\n')) {
+                    sb.append('\n')
+                }
+
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+                val fileName = "NoActive_log_$timestamp.log"
+
+                val fileUri = DocumentsContract.createDocument(
+                    contentResolver, uri, "text/plain", fileName
+                ) ?: throw IOException("createDocument returned null")
+
+                contentResolver.openOutputStream(fileUri, "wt")?.use { os ->
+                    os.write(sb.toString().toByteArray())
+                } ?: throw IOException("openOutputStream returned null")
+
+                handler.post {
+                    Toast.makeText(this, getString(R.string.log_exported, fileName), Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Throwable) {
+                handler.post {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.log_export_failed, e.message ?: ""),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }.start()
+    }
+
+    /**
+     * 导出专用：读取日志文件全部内容（无行数限制）.
+     * 与 [tryReadLog] 区别：导出场景需要完整内容，不截断.
+     */
+    private fun readLogForExport(path: String): String {
+        // 优先 SuFileInputStream 全量读取
+        try {
+            val file = SuFile(path)
+            if (!file.exists()) {
+                return ""
+            }
+            SuFileInputStream.open(file).use { fis ->
+                BufferedReader(InputStreamReader(fis)).use { reader ->
+                    val sb = StringBuilder()
+                    var line = reader.readLine()
+                    while (line != null) {
+                        sb.append(line).append('\n')
+                        line = reader.readLine()
+                    }
+                    return sb.toString()
+                }
+            }
+        } catch (e: Throwable) {
+            // 回退：用 cat 命令
+        }
+
+        return try {
+            val result = Shell.cmd("cat '$path'").exec()
+            result.out.joinToString("\n")
+        } catch (e: Throwable) {
+            ""
+        }
     }
 
     companion object {
