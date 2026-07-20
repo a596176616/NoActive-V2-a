@@ -14,7 +14,7 @@ import cn.myflv.noactive.core.handler.FreezerHandler;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 public class ScreenStateHook extends MethodHook {
 
@@ -63,28 +63,28 @@ public class ScreenStateHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void afterMethod(MethodHookParam param) throws Throwable {
+            protected Object afterMethod(XposedInterface.Chain chain, Object result) throws Throwable {
                 // 方法是否执行成功
-                boolean isChange = (boolean) param.getResult();
+                boolean isChange = (boolean) result;
                 if (!isChange) {
-                    return;
+                    return result;
                 }
-                Object[] args = param.args;
                 // 显示状态
-                int state = (int) args[0];
+                int state = (int) chain.getArg(0);
                 if (state != Display.STATE_OFF && state != Display.STATE_ON) {
-                    return;
+                    return result;
                 }
                 // 是否关闭
                 boolean isOn = (state == Display.STATE_ON);
                 // 存储状态
                 if (!memData.setScreenOn(isOn)) {
-                    return;
+                    return result;
                 }
                 screenChange(isOn);
+                return result;
             }
         };
     }
