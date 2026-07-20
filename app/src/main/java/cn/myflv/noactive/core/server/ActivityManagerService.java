@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.FieldConstants;
@@ -50,8 +51,12 @@ public class ActivityManagerService {
         }
         try {
             // API 102: XposedHelpers.findMethodBestMatch → ReflectionUtils.findMethodBestMatch
-            // 保留直接 invoke() 以维持原 catch (IllegalAccessException | InvocationTargetException) 语义
-            return (boolean) ReflectionUtils.findMethodBestMatch(clazz, MethodConstants.isAppForeground, uid).invoke(activityManagerService, uid);
+            // Bug 8d fix: SDK 36 上 isAppForeground(int) 是 private 方法，跨类 invoke 会抛
+            // IllegalAccessException: cannot access private method ...
+            // 必须先 setAccessible(true) 解除访问限制，再调用 invoke().
+            Method method = ReflectionUtils.findMethodBestMatch(clazz, MethodConstants.isAppForeground, uid);
+            method.setAccessible(true);
+            return (boolean) method.invoke(activityManagerService, uid);
         } catch (IllegalAccessException | InvocationTargetException e) {
             // Bug 8d 诊断: 之前只输出固定字符串，看不到根因。
             // 输出异常类型 + message + cause，便于从下次日志定位真实失败原因。
