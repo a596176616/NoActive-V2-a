@@ -5,7 +5,7 @@ import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.hook.base.AbstractReplaceHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 public class IdleWhiteListRemoveHook extends MethodHook {
 
@@ -30,10 +30,10 @@ public class IdleWhiteListRemoveHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractReplaceHook() {
             @Override
-            protected Object replaceMethod(MethodHookParam param) throws Throwable {
+            protected Object replaceMethod(XposedInterface.Chain chain) throws Throwable {
                 Log.d("avoid remove power idle white list");
                 return null;
             }
