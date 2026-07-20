@@ -5,7 +5,7 @@ import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.handler.FreezerHandler;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 /**
  * Binder通信Hook.
@@ -41,16 +41,15 @@ public class BinderStateHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void beforeMethod(MethodHookParam param) throws Throwable {
-                Object[] args = param.args;
-                int state = (int) args[3];
+            protected void beforeMethod(XposedInterface.Chain chain) throws Throwable {
+                int state = (int) chain.getArg(3);
                 if (state != BINDER_BUSY) {
                     return;
                 }
-                int uid = (int) args[0];
+                int uid = (int) chain.getArg(0);
                 freezerHandler.temporaryUnfreezeIfNeed(uid, REASON);
             }
         };
