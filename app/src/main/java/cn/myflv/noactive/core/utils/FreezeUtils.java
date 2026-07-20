@@ -28,6 +28,8 @@ public class FreezeUtils {
     private final MemData memData;
     private final boolean suExecute;
     private FreezerInterface freezerInterface = null;
+    // F3A-054 fix: 记录 ServiceConnection 绑定状态，重连前先 unbind 旧的，避免累积泄露
+    private boolean bound = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -38,6 +40,7 @@ public class FreezeUtils {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             freezerInterface = null;
+            // F3A-054 fix: 服务断开时 bound 状态由系统自动管理，下次 connectIfNeed 会显式 unbind 再重连
             Log.w("su disconnected");
         }
     };
@@ -193,7 +196,19 @@ public class FreezeUtils {
             if (memData.getActivityManagerService().getContext() == null) {
                 return;
             }
+            // F3A-054 fix: 重连前先 unbind 旧 ServiceConnection，避免累积泄露
+            // 场景：服务进程崩溃 → onServiceDisconnected 把 freezerInterface 置 null
+            //       → 下次 connectIfNeed 重连 → 若不先 unbind 旧 connection 会累积
+            if (bound) {
+                try {
+                    memData.getContext().unbindService(serviceConnection);
+                } catch (Throwable ignored) {
+                    // unbind 失败不阻断重连流程
+                }
+                bound = false;
+            }
             memData.getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            bound = true;
         } catch (Throwable throwable) {
             Log.e("su connect", throwable);
         }
