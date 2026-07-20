@@ -113,15 +113,11 @@ public class ThreadUtils {
      * @param runnable 执行方法
      */
     public static void runWithLock(String key, Runnable runnable) {
-        // 锁线程Map
+        // F3A-078 fix: 不再调用 remove.interrupt()，避免打断同 key 旧任务的 I/O 操作导致状态不一致
+        // 同 key 任务串行由 synchronized(getLockKey(key)) 保证，旧任务会完整执行完才释放锁
+        // 同 key "后到覆盖先到" 语义由 newThread(key, ...) 的 token 机制实现，与 interrupt 无关
         synchronized (threadMap) {
-            // 移除线程并获取被移除的线程
-            Thread remove = threadMap.remove(key);
-            if (remove != null) {
-                // 中断线程
-                remove.interrupt();
-            }
-            // 放入当前线程
+            threadMap.remove(key);
             threadMap.put(key, Thread.currentThread());
         }
         // 带锁运行
