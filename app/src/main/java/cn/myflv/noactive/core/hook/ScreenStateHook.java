@@ -2,12 +2,16 @@ package cn.myflv.noactive.core.hook;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Display;
 
+import java.lang.reflect.Method;
+
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
+import cn.myflv.noactive.core.HandleHook;
 import cn.myflv.noactive.core.entity.AppInfo;
 import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.handler.FreezerHandler;
@@ -59,6 +63,8 @@ public class ScreenStateHook extends MethodHook {
 
     @Override
     public Object[] getTargetParam() {
+        // SDK <= 33: [int, boolean]
+        // SDK 34+:  [int, int reason]
         return new Object[]{int.class, boolean.class};
     }
 
@@ -87,6 +93,66 @@ public class ScreenStateHook extends MethodHook {
                 return result;
             }
         };
+    }
+
+    /**
+     * v0.9.10 port: 重写 hook() 实现多候选签名依次尝试.
+     * <p>
+     * SDK 34+ 上 setScreenState 第二个参数从 boolean 变成 @Display.StateReason int，
+     * 按 SDK 版本选择对应签名。失败时回退到 getTargetParam() 默认签名。
+     */
+    @Override
+    public void hook() {
+        int minVersion = getMinVersion();
+        if (minVersion != ANY_VERSION && Build.VERSION.SDK_INT < minVersion) {
+            return;
+        }
+
+        XposedInterface.Hooker targetHook = getTargetHook();
+        boolean hooked = false;
+
+        try {
+            Class<?> clazz = Class.forName(getTargetClass(), false, classLoader);
+
+            // 候选 1: SDK 34+ - [int, int reason]
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    Method method = clazz.getDeclaredMethod(getTargetMethod(),
+                            int.class, int.class);
+                    method.setAccessible(true);
+                    HandleHook.getInstance().hook(method).intercept(targetHook);
+                    hooked = true;
+                    Log.i("Hooked setScreenState (2 args + int reason, SDK >= 34)");
+                } catch (Throwable ignored) {
+                    // 失败回退
+                }
+            }
+
+            // 候选 2: 默认签名 - [int, boolean]
+            if (!hooked) {
+                try {
+                    Object[] paramTypesObj = getTargetParam();
+                    Class<?>[] paramTypes = new Class<?>[paramTypesObj.length];
+                    for (int i = 0; i < paramTypesObj.length; i++) {
+                        paramTypes[i] = (Class<?>) paramTypesObj[i];
+                    }
+                    Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+                    method.setAccessible(true);
+                    HandleHook.getInstance().hook(method).intercept(targetHook);
+                    hooked = true;
+                    Log.i("Hooked setScreenState (2 args + boolean, legacy)");
+                } catch (Throwable throwable) {
+                    onError(throwable);
+                    return;
+                }
+            }
+
+            if (hooked) {
+                onSuccess();
+            }
+        } catch (Throwable throwable) {
+            onError(throwable);
+        }
     }
 
     public void screenChange(boolean isOn) {
