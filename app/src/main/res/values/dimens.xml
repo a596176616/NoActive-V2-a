@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ============================================================
+         GeekOS Design System — Dimension Tokens
+         圆角、间距、字号系统
+         ============================================================ -->
+
+    <!-- 圆角 Radius -->
+    <dimen name="geek_radius_sm">4dp</dimen>
+    <dimen name="geek_radius_md">8dp</dimen>
+    <dimen name="geek_radius_lg">12dp</dimen>
+    <dimen name="geek_radius_xl">16dp</dimen>
+    <dimen name="geek_radius_2xl">20dp</dimen>
+    <dimen name="geek_radius_3xl">24dp</dimen>
+    <dimen name="geek_radius_full">999dp</dimen>
+
+    <!-- 间距 Spacing -->
+    <dimen name="geek_space_1">4dp</dimen>
+    <dimen name="geek_space_2">8dp</dimen>
+    <dimen name="geek_space_3">12dp</dimen>
+    <dimen name="geek_space_4">16dp</dimen>
+    <dimen name="geek_space_5">20dp</dimen>
+    <dimen name="geek_space_6">24dp</dimen>
+    <dimen name="geek_space_8">32dp</dimen>
+
+    <!-- 字号 Typography (映射设计文档 display/h1/h2/body/caption/mono) -->
+    <dimen name="geek_text_display">28sp</dimen>
+    <dimen name="geek_text_h1">22sp</dimen>
+    <dimen name="geek_text_h2">18sp</dimen>
+    <dimen name="geek_text_body">14sp</dimen>
+    <dimen name="geek_text_caption">12sp</dimen>
+    <dimen name="geek_text_label">11sp</dimen>
+    <dimen name="geek_text_mono">13sp</dimen>
+
+    <!-- 组件专用 -->
+    <dimen name="geek_app_icon_size">40dp</dimen>
+    <dimen name="geek_app_icon_radius">12dp</dimen>
+    <dimen name="geek_list_item_height">64dp</dimen>
+    <dimen name="geek_search_bar_height">44dp</dimen>
+    <dimen name="geek_pill_nav_height">64dp</dimen>
+    <dimen name="geek_elevation_1">3dp</dimen>
+    <dimen name="geek_elevation_2">12dp</dimen>
+    <dimen name="geek_elevation_3">24dp</dimen>
+</resources>

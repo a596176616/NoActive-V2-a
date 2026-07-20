@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 强制冻结徽章 → warning soft 底 + warning 字 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:useLevel="false">
-    <solid android:color="?attr/colorPrimary" />
-    <stroke
-        android:width="0.1dip"
-        android:color="#FF8C00" />
-    <size
-        android:width="20dp"
-        android:height="10dp" />
-    <corners android:radius="10dp" />
+    android:shape="rectangle">
+    <solid android:color="@color/geek_warning_soft" />
+    <corners android:radius="@dimen/geek_radius_full" />
+    <padding
+        android:bottom="3dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="3dp" />
 </shape>

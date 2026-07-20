@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS 应用图标圆角背景：薰衣草紫 soft -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/geek_accent_soft" />
+    <corners android:radius="@dimen/geek_app_icon_radius" />
+</shape>

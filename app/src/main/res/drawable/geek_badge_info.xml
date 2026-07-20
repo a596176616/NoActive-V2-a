@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- GeekOS: 其他配置/电池优化徽章 → success soft 底 + success 字 -->
+<!-- GeekOS 徽章背景：info soft 底（白名单/可见窗口） -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/geek_success_soft" />
+    <solid android:color="@color/geek_info_soft" />
     <corners android:radius="@dimen/geek_radius_full" />
     <padding
         android:bottom="3dp"
