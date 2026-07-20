@@ -1,1 +1,494 @@
-cGFja2FnZSBjbi5teWZsdi5ub2FjdGl2ZS5jb3JlLmhhbmRsZXI7CgppbXBvcnQgYW5kcm9pZC5jb250ZW50LnBtLkFwcGxpY2F0aW9uSW5mbzsKCmltcG9ydCBqYXZhLnV0aWwuQXJyYXlMaXN0OwppbXBvcnQgamF2YS51dGlsLkhhc2hTZXQ7CmltcG9ydCBqYXZhLnV0aWwuTGlzdDsKaW1wb3J0IGphdmEudXRpbC5NYXA7CmltcG9ydCBqYXZhLnV0aWwuU2V0OwppbXBvcnQgamF2YS51dGlsLmNvbmN1cnJlbnQuYXRvbWljLkF0b21pY0Jvb2xlYW47CgppbXBvcnQgY24ubXlmbHYubm9hY3RpdmUuY29uc3RhbnQuQ2xhc3NDb25zdGFudHM7CmltcG9ydCBjbi5teWZsdi5ub2FjdGl2ZS5jb25zdGFudC5NZXRob2RDb25zdGFudHM7CmltcG9ydCBjbi5teWZsdi5ub2FjdGl2ZS5jb3JlLmVudGl0eS5BcHBJbmZvOwppbXBvcnQgY24ubXlmbHYubm9hY3RpdmUuY29yZS5lbnRpdHkuTWVtRGF0YTsKaW1wb3J0IGNuLm15Zmx2Lm5vYWN0aXZlLmNvcmUuc2VydmVyLlByb2Nlc3NSZWNvcmQ7CmltcG9ydCBjbi5teWZsdi5ub2FjdGl2ZS5jb3JlLnV0aWxzLkZyZWV6ZVV0aWxzOwppbXBvcnQgY24ubXlmbHYubm9hY3RpdmUuY29yZS51dGlscy5GcmVlemVyQ29uZmlnOwppbXBvcnQgY24ubXlmbHYubm9hY3RpdmUuY29yZS51dGlscy5Mb2c7CmltcG9ydCBjbi5teWZsdi5ub2FjdGl2ZS5jb3JlLnV0aWxzLlRocmVhZFV0aWxzOwppbXBvcnQgY24ubXlmbHYubm9hY3RpdmUudXRpbHMuUmVmbGVjdGlvblV0aWxzOwoKcHVibGljIGNsYXNzIEZyZWV6ZXJIYW5kbGVyIHsKICAgIC8qKgogICAgICogQmluZGVy5LyR55ygLgogICAgICovCiAgICBwcml2YXRlIGZpbmFsIHN0YXRpYyBpbnQgQklOREVSX0lETEUgPSAwOwogICAgcHJpdmF0ZSBmaW5hbCBDbGFzc0xvYWRlciBjbGFzc0xvYWRlcjsKICAgIHByaXZhdGUgZmluYWwgTWVtRGF0YSBtZW1EYXRhOwogICAgcHJpdmF0ZSBmaW5hbCBGcmVlemVVdGlscyBmcmVlemVVdGlsczsKCiAgICAvKioKICAgICAqIHYwLjkuMTAgcG9ydCBmaXggKE1BSk9SLTEwLzEyKTogUjQg5a6M5oiQ5qCH5b+XLgogICAgICogPHA+CiAgICAgKiDlkK/liqjlkI4gcmVmcmVlemVBbGwoKSDmiafooYzlrozmr5Xnva4gdHJ1ZeOAguWcqCByNENvbXBsZXRlZD1mYWxzZSDmnJ/pl7TvvJoKICAgICAqIC0gZnJlZXplckFwcFNldCDlt7LliqDovb0gYmFja2dyb3VuZC5jb25mIOeahCBrZXkKICAgICAqIC0g5L2G5a6e6ZmF6L+b56iL5bCa5pyq54mp55CG5Ya757uTCiAgICAgKiAtIEJyb2FkY2FzdERlbGl2ZXJIb29rIOW6lOi3s+i/hyByZWNlaXZlckxpc3QuY2xlYXIoKe+8jOmBv+WFjeivr+a4heepuuW8gOacuuWQjummluaJueW5v+aSrQogICAgICovCiAgICBwcml2YXRlIHN0YXRpYyBmaW5hbCBBdG9taWNCb29sZWFuIHI0Q29tcGxldGVkID0gbmV3IEF0b21pY0Jvb2xlYW4oZmFsc2UpOwoKICAgIC8qKgogICAgICogUjQg5piv5ZCm5bey5a6M5oiQ77yI5L6bIEJyb2FkY2FzdERlbGl2ZXJIb29rIOWcqOa4heepuuW5v+aSreWJjeWuiOaKpOWIpOaWre+8iS4KICAgICAqLwogICAgcHVibGljIHN0YXRpYyBib29sZWFuIGlzUjRDb21wbGV0ZWQoKSB7CiAgICAgICAgcmV0dXJuIHI0Q29tcGxldGVkLmdldCgpOwogICAgfQoKICAgIHB1YmxpYyBGcmVlemVySGFuZGxlcihDbGFzc0xvYWRlciBjbGFzc0xvYWRlciwgTWVtRGF0YSBtZW1EYXRhLCBGcmVlemVVdGlscyBmcmVlemVVdGlscykgewogICAgICAgIHRoaXMuY2xhc3NMb2FkZXIgPSBjbGFzc0xvYWRlcjsKICAgICAgICB0aGlzLm1lbURhdGEgPSBtZW1EYXRhOwogICAgICAgIHRoaXMuZnJlZXplVXRpbHMgPSBmcmVlemVVdGlsczsKICAgICAgICBpZiAoRnJlZXplckNvbmZpZy5pc0NvbmZpZ09uKEZyZWV6ZXJDb25maWcuQm9vdEZyZWV6ZSkpIHsKICAgICAgICAgICAgZW5hYmxlQm9vdEZyZWV6ZSgpOwogICAgICAgIH0KICAgICAgICBpZiAoRnJlZXplckNvbmZpZy5pc0NvbmZpZ09uKEZyZWV6ZXJDb25maWcuSW50ZXJ2YWxVbmZyZWV6ZSkpIHsKICAgICAgICAgICAgZW5hYmxlSW50ZXJ2YWxVbmZyZWV6ZSgpOwogICAgICAgIH0KICAgICAgICBpZiAoRnJlZXplckNvbmZpZy5pc0NvbmZpZ09uKEZyZWV6ZXJDb25maWcuSW50ZXJ2YWxGcmVlemUpKSB7CiAgICAgICAgICAgIGVuYWJsZUludGVydmFsRnJlZXplKCk7CiAgICAgICAgfQogICAgfQoKICAgIC8qKgogICAgICog5byA5ZCv5byA5py65Ya757uTCiAgICAgKi8KICAgIHB1YmxpYyB2b2lkIGVuYWJsZUJvb3RGcmVlemUoKSB7CiAgICAgICAgVGhyZWFkVXRpbHMuc2NoZWR1bGVEZWxheSgoKSAtPiB7CiAgICAgICAgICAgIC8vIHYwLjkuMTAgcG9ydCBmaXggKE1JTk9SLTIzKTog6Ziy5b6hIGFjdGl2aXR5TWFuYWdlclNlcnZpY2Ug5pyq5bCx57uq5pe2IE5QRQogICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRBY3Rpdml0eU1hbmFnZXJTZXJ2aWNlKCkgPT0gbnVsbCkgewogICAgICAgICAgICAgICAgTG9nLncoIkJvb3QgZnJlZXplOiBhY3Rpdml0eU1hbmFnZXJTZXJ2aWNlIG5vdCByZWFkeSwgc2tpcCIpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CiAgICAgICAgICAgIExvZy5pKCJCb290IGZyZWV6ZSBzdGFydCIpOwogICAgICAgICAgICAvLyDojrflj5bljIXlkI3liIbnu4Tov5vnqIsKICAgICAgICAgICAgTWFwPFN0cmluZywgTGlzdDxQcm9jZXNzUmVjb3JkPj4gcHJvY2Vzc01hcCA9IG1lbURhdGEuZ2V0QWN0aXZpdHlNYW5hZ2VyU2VydmljZSgpLmdldFByb2Nlc3NMaXN0KCkuZ2V0UHJvY2Vzc01hcCgpOwogICAgICAgICAgICAvLyDlhrvnu5PnmoRBUFAKICAgICAgICAgICAgU2V0PFN0cmluZz4gZnJvemVuQXBwcyA9IG5ldyBIYXNoU2V0PD4oKTsKICAgICAgICAgICAgLy8g6YGN5Y6G5q2j5Zyo6L+Q6KGM55qE6L+b56iLCiAgICAgICAgICAgIGZvciAoU3RyaW5nIGtleSA6IHByb2Nlc3NNYXAua2V5U2V0KCkpIHsKICAgICAgICAgICAgICAgIEFwcEluZm8gYXBwSW5mbyA9IEFwcEluZm8uZ2V0SW5zdGFuY2Uoa2V5KTsKICAgICAgICAgICAgICAgIFRocmVhZFV0aWxzLnJ1bldpdGhMb2NrKGFwcEluZm8uZ2V0S2V5KCksICgpIC0+IHsKICAgICAgICAgICAgICAgICAgICAvLyDojrflj5blupTnlKjov5vnqIsKICAgICAgICAgICAgICAgICAgICBMaXN0PFByb2Nlc3NSZWNvcmQ+IHByb2Nlc3NSZWNvcmRzID0gcHJvY2Vzc01hcC5nZXQoYXBwSW5mby5nZXRQYWNrYWdlTmFtZSgpKTsKICAgICAgICAgICAgICAgICAgICBpZiAocHJvY2Vzc1JlY29yZHMgPT0gbnVsbCkgewogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm47CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIC8vIOWGu+e7kwogICAgICAgICAgICAgICAgICAgIGZvciAoUHJvY2Vzc1JlY29yZCBwcm9jZXNzUmVjb3JkIDogcHJvY2Vzc1JlY29yZHMpIHsKICAgICAgICAgICAgICAgICAgICAgICAgaWYgKG1lbURhdGEuaXNUYXJnZXRQcm9jZXNzKGFwcEluZm8uZ2V0VXNlcklkKCksIHByb2Nlc3NSZWNvcmQpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBmcmVlemVVdGlscy5mcmVlemVyKHByb2Nlc3NSZWNvcmQpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgZnJvemVuQXBwcy5hZGQoYXBwSW5mby5nZXRLZXkoKSk7CiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9KTsKICAgICAgICAgICAgfQogICAgICAgICAgICBMb2cuZCgiRnJvemVuIGFwcCBsaXN0OiAiICsgZnJvemVuQXBwcyk7CiAgICAgICAgICAgIC8vIHYwLjkuMTAgcG9ydCBmaXggKE1JTk9SLTEzKTog6YCQIGtleSDmt7vliqDlubbliKTmlq3mmK/lkKbmlrDlop7vvIzpgb/lhY0gYmFja2dyb3VuZC5jb25mIOmHjeWkjeihjAogICAgICAgICAgICBmb3IgKFN0cmluZyBrZXkgOiBmcm96ZW5BcHBzKSB7CiAgICAgICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRGcmVlemVyQXBwU2V0KCkuYWRkKGtleSkpIHsKICAgICAgICAgICAgICAgICAgICBGcmVlemVyQ29uZmlnLmFwcGVuZEJhY2tncm91bmQoa2V5KTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0sIEludGVnZXIucGFyc2VJbnQoRnJlZXplckNvbmZpZy5nZXRTdHJpbmcoRnJlZXplckNvbmZpZy5Cb290RnJlZXplRGVsYXksICIxIikpKTsKICAgICAgICBMb2cuaSgiQm9vdCBmcmVlemUiKTsKICAgIH0KCiAgICAvKioKICAgICAqIOW8gOWQr+WumuaXtuWGu+e7kwogICAgICovCiAgICBwdWJsaWMgdm9pZCBlbmFibGVJbnRlcnZhbEZyZWV6ZSgpIHsKICAgICAgICBUaHJlYWRVdGlscy5zY2hlZHVsZUludGVydmFsKCgpIC0+IHsKICAgICAgICAgICAgLy8gdjAuOS4xMCBwb3J0IGZpeCAoTUlOT1ItMjMpOiDpmLLlvqEgYWN0aXZpdHlNYW5hZ2VyU2VydmljZSDmnKrlsLHnu6rml7YgTlBFCiAgICAgICAgICAgIGlmIChtZW1EYXRhLmdldEFjdGl2aXR5TWFuYWdlclNlcnZpY2UoKSA9PSBudWxsKSB7CiAgICAgICAgICAgICAgICBMb2cudygiSW50ZXJ2YWwgZnJlZXplOiBhY3Rpdml0eU1hbmFnZXJTZXJ2aWNlIG5vdCByZWFkeSwgc2tpcCIpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CiAgICAgICAgICAgIExvZy5pKCJJbnRlcnZhbCBmcmVlemUgc3RhcnQiKTsKICAgICAgICAgICAgLy8g6I635Y+W5YyF5ZCN5YiG57uE6L+b56iLCiAgICAgICAgICAgIE1hcDxTdHJpbmcsIExpc3Q8UHJvY2Vzc1JlY29yZD4+IHByb2Nlc3NNYXAgPSBtZW1EYXRhLmdldEFjdGl2aXR5TWFuYWdlclNlcnZpY2UoKS5nZXRQcm9jZXNzTGlzdCgpLmdldFByb2Nlc3NNYXAoKTsKICAgICAgICAgICAgLy8g5Ya757uT55qEQVBQCiAgICAgICAgICAgIFNldDxTdHJpbmc+IGZyb3plbkFwcHMgPSBuZXcgSGFzaFNldDw+KCk7CiAgICAgICAgICAgIC8vIOmBjeWOhuato+WcqOi/kOihjOeahOi/m+eoiwogICAgICAgICAgICBmb3IgKFN0cmluZyBrZXkgOiBwcm9jZXNzTWFwLmtleVNldCgpKSB7CiAgICAgICAgICAgICAgICBBcHBJbmZvIGFwcEluZm8gPSBBcHBJbmZvLmdldEluc3RhbmNlKGtleSk7CiAgICAgICAgICAgICAgICBUaHJlYWRVdGlscy5ydW5XaXRoTG9jayhhcHBJbmZvLmdldEtleSgpLCAoKSAtPiB7CiAgICAgICAgICAgICAgICAgICAgLy8g5YaN5qyh5qOA5p+l5piv5ZCm6KKr5Ya757uTCiAgICAgICAgICAgICAgICAgICAgaWYgKCFtZW1EYXRhLmdldEZyZWV6ZXJBcHBTZXQoKS5jb250YWlucyhrZXkpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgLy8g6I635Y+W5bqU55So6L+b56iLCiAgICAgICAgICAgICAgICAgICAgTGlzdDxQcm9jZXNzUmVjb3JkPiBwcm9jZXNzUmVjb3JkcyA9IHByb2Nlc3NNYXAuZ2V0KGFwcEluZm8uZ2V0UGFja2FnZU5hbWUoKSk7CiAgICAgICAgICAgICAgICAgICAgaWYgKHByb2Nlc3NSZWNvcmRzID09IG51bGwpIHsKICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICAvLyDlhrvnu5MKICAgICAgICAgICAgICAgICAgICBmb3IgKFByb2Nlc3NSZWNvcmQgcHJvY2Vzc1JlY29yZCA6IHByb2Nlc3NSZWNvcmRzKSB7CiAgICAgICAgICAgICAgICAgICAgICAgIGlmIChtZW1EYXRhLmlzVGFyZ2V0UHJvY2VzcyhhcHBJbmZvLmdldFVzZXJJZCgpLCBwcm9jZXNzUmVjb3JkKSkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgZnJlZXplVXRpbHMuZnJlZXplcihwcm9jZXNzUmVjb3JkKTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZyb3plbkFwcHMuYWRkKGFwcEluZm8uZ2V0S2V5KCkpOwogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfSk7CiAgICAgICAgICAgIH0KICAgICAgICAgICAgTG9nLmQoIkZyb3plbiBhcHAgbGlzdDogIiArIGZyb3plbkFwcHMpOwogICAgICAgICAgICAvLyB2MC45LjEwIHBvcnQgZml4IChNSU5PUi0xMyk6IOmAkCBrZXkg5re75Yqg5bm25Yik5pat5piv5ZCm5paw5aKe77yM6YG/5YWNIGJhY2tncm91bmQuY29uZiDph43lpI3ooYwKICAgICAgICAgICAgZm9yIChTdHJpbmcga2V5IDogZnJvemVuQXBwcykgewogICAgICAgICAgICAgICAgaWYgKG1lbURhdGEuZ2V0RnJlZXplckFwcFNldCgpLmFkZChrZXkpKSB7CiAgICAgICAgICAgICAgICAgICAgRnJlZXplckNvbmZpZy5hcHBlbmRCYWNrZ3JvdW5kKGtleSk7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICB9LCBJbnRlZ2VyLnBhcnNlSW50KEZyZWV6ZXJDb25maWcuZ2V0U3RyaW5nKEZyZWV6ZXJDb25maWcuSW50ZXJ2YWxGcmVlemVEZWxheSwgIjEiKSkpOwogICAgICAgIExvZy5pKCJJbnRlcnZhbCBmcmVlemUiKTsKICAgIH0KCiAgICAvKioKICAgICAqIOWumuaXtui9rueVquino+WGuwogICAgICovCiAgICBwdWJsaWMgdm9pZCBlbmFibGVJbnRlcnZhbFVuZnJlZXplKCkgewogICAgICAgIFRocmVhZFV0aWxzLnNjaGVkdWxlSW50ZXJ2YWwoKCkgLT4gewogICAgICAgICAgICBMb2cuaSgiSW50ZXJ2YWwgdW5mcmVlemUgc3RhcnQiKTsKICAgICAgICAgICAgLy8g6YGN5Y6G6KKr5Ya757uT55qE6L+b56iLCiAgICAgICAgICAgIGZvciAoU3RyaW5nIGtleSA6IG1lbURhdGEuZ2V0RnJlZXplckFwcFNldCgpKSB7CiAgICAgICAgICAgICAgICBBcHBJbmZvIGFwcEluZm8gPSBBcHBJbmZvLmdldEluc3RhbmNlKGtleSk7CiAgICAgICAgICAgICAgICBMb2cuZChhcHBJbmZvLmdldEtleSgpICsgIiBpbnRlcnZhbCB1bmZyZWV6ZSBzdGFydCIpOwogICAgICAgICAgICAgICAgLy8g6Kej5Ya7CiAgICAgICAgICAgICAgICBvblJlc3VtZSh0cnVlLCBhcHBJbmZvLCB0cnVlLCAoKSAtPiB7CiAgICAgICAgICAgICAgICAgICAgLy8g5Ya757uTCiAgICAgICAgICAgICAgICAgICAgb25QYXVzZSh0cnVlLCBhcHBJbmZvLCAzMDAwLCAoKSAtPiB7CiAgICAgICAgICAgICAgICAgICAgICAgIExvZy5kKGFwcEluZm8uZ2V0S2V5KCkgKyAiIGludGVydmFsIHVuZnJlZXplIGZpbmlzaCIpOwogICAgICAgICAgICAgICAgICAgIH0pOwogICAgICAgICAgICAgICAgfSk7CiAgICAgICAgICAgICAgICAvLyDnu5PmnZ/lvqrnjq8KICAgICAgICAgICAgICAgIC8vIOebuOW9k+S6juWPquino+WGu+ayoeacieacgOS5heayoeacieaJk+W8gOeahCBBUFAKICAgICAgICAgICAgICAgIGJyZWFrOwogICAgICAgICAgICB9CiAgICAgICAgfSwgSW50ZWdlci5wYXJzZUludChGcmVlemVyQ29uZmlnLmdldFN0cmluZyhGcmVlemVyQ29uZmlnLkludGVydmFsVW5mcmVlemVEZWxheSwgIjEiKSkpOwogICAgICAgIExvZy5pKCJJbnRlcnZhbCB1bmZyZWV6ZSIpOwogICAgfQoKCiAgICBwdWJsaWMgdm9pZCBvblJlc3VtZShib29sZWFuIGhhbmRsZSwgQXBwSW5mbyBhcHBJbmZvKSB7CiAgICAgICAgb25SZXN1bWUoaGFuZGxlLCBhcHBJbmZvLCBmYWxzZSwgbnVsbCk7CiAgICB9CgogICAgLyoqCiAgICAgKiBBUFDliIfmjaLoh7PliY3lj7AuCiAgICAgKgogICAgICogQHBhcmFtIGFwcEluZm8g5LqL5Lu25L+h5oGvCiAgICAgKi8KICAgIHB1YmxpYyB2b2lkIG9uUmVzdW1lKGJvb2xlYW4gaGFuZGxlLCBBcHBJbmZvIGFwcEluZm8sIGJvb2xlYW4gdGVtcG9yYXJ5LCBSdW5uYWJsZSBydW5uYWJsZSkgewogICAgICAgIC8vIOS4jeWkhOeQhuWwsei3s+i/hwogICAgICAgIGlmICghaGFuZGxlKSB7CiAgICAgICAgICAgIHJldHVybjsKICAgICAgICB9CiAgICAgICAgVGhyZWFkVXRpbHMudGhhd1RocmVhZChhcHBJbmZvLmdldEtleSgpLCAoKSAtPiB7CiAgICAgICAgICAgIFRocmVhZFV0aWxzLnNhZmVSdW4oKCkgLT4gewogICAgICAgICAgICAgICAgaWYgKHRlbXBvcmFyeSkgewogICAgICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIC8vIOiOt+WPluWMheWQjQogICAgICAgICAgICAgICAgU3RyaW5nIHBhY2thZ2VOYW1lID0gYXBwSW5mby5nZXRQYWNrYWdlTmFtZSgpOwogICAgICAgICAgICAgICAgLy8g55m95ZCN5Y2V5Li76L+b56iL6Lez6L+HCiAgICAgICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRXaGl0ZVByb2Nlc3NMaXN0KCkuY29udGFpbnMocGFja2FnZU5hbWUpKSB7CiAgICAgICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgaWYgKCFtZW1EYXRhLmdldFNvY2tldEFwcHMoKS5jb250YWlucyhwYWNrYWdlTmFtZSkpIHsKICAgICAgICAgICAgICAgICAgICAvLyDmgaLlpI1TdGFuZEJ5CiAgICAgICAgICAgICAgICAgICAgbWVtRGF0YS5nZXRBcHBTdGFuZGJ5Q29udHJvbGxlcigpLmZvcmNlSWRsZVN0YXRlKGFwcEluZm8sIGZhbHNlKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfSk7CiAgICAgICAgICAgIC8vIOiOt+WPluebruagh+i/m+eoiwogICAgICAgICAgICBMaXN0PFByb2Nlc3NSZWNvcmQ+IHRhcmdldFByb2Nlc3NSZWNvcmRzID0gbWVtRGF0YS5nZXRUYXJnZXRQcm9jZXNzUmVjb3JkcyhhcHBJbmZvKTsKICAgICAgICAgICAgLy8g6Kej5Ya7CiAgICAgICAgICAgIGZyZWV6ZVV0aWxzLnVuRnJlZXplcih0YXJnZXRQcm9jZXNzUmVjb3Jkcyk7CiAgICAgICAgICAgIC8vIOenu+mZpOiiq+WGu+e7k0FQUAogICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRGcmVlemVyQXBwU2V0KCkucmVtb3ZlKGFwcEluZm8uZ2V0S2V5KCkpKSB7CiAgICAgICAgICAgICAgICAvLyB2MC45LjEwIHBvcnQ6IOWQjOatpeenu+mZpCBiYWNrZ3JvdW5kLmNvbmYg5oyB5LmF5YyW6K6w5b2VCiAgICAgICAgICAgICAgICBGcmVlemVyQ29uZmlnLnJlbW92ZUJhY2tncm91bmQoYXBwSW5mby5nZXRLZXkoKSk7CiAgICAgICAgICAgIH0KICAgICAgICAgICAgaWYgKFRocmVhZC5jdXJyZW50VGhyZWFkKCkuaXNJbnRlcnJ1cHRlZCgpKSB7CiAgICAgICAgICAgICAgICBMb2cuZChhcHBJbmZvLmdldEtleSgpICsgIiBldmVudCB1cGRhdGVkIik7CiAgICAgICAgICAgICAgICByZXR1cm47CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGlmIChydW5uYWJsZSAhPSBudWxsKSB7CiAgICAgICAgICAgICAgICBydW5uYWJsZS5ydW4oKTsKICAgICAgICAgICAgfQogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyB2b2lkIG9uUGF1c2UoYm9vbGVhbiBoYW5kbGUsIEFwcEluZm8gYXBwSW5mbykgewogICAgICAgIG9uUGF1c2UoaGFuZGxlLCBhcHBJbmZvLCAwLCBudWxsKTsKICAgIH0KCiAgICBwdWJsaWMgdm9pZCBvblBhdXNlKGJvb2xlYW4gaGFuZGxlLCBBcHBJbmZvIGFwcEluZm8sIGxvbmcgZGVsYXkpIHsKICAgICAgICBvblBhdXNlKGhhbmRsZSwgYXBwSW5mbywgZGVsYXksIG51bGwpOwogICAgfQoKICAgIC8qKgogICAgICogQVBQ5YiH5o2i6Iez5ZCO5Y+wLgogICAgICoKICAgICAqIEBwYXJhbSBhcHBJbmZvIOWMheWQjQogICAgICovCiAgICBwdWJsaWMgdm9pZCBvblBhdXNlKGJvb2xlYW4gaGFuZGxlLCBBcHBJbmZvIGFwcEluZm8sIGxvbmcgZGVsYXksIFJ1bm5hYmxlIHJ1bm5hYmxlKSB7CiAgICAgICAgLy8g5LiN5aSE55CG5bCx6Lez6L+HCiAgICAgICAgaWYgKCFoYW5kbGUpIHsKICAgICAgICAgICAgcmV0dXJuOwogICAgICAgIH0KICAgICAgICBUaHJlYWRVdGlscy5uZXdUaHJlYWQoYXBwSW5mby5nZXRLZXkoKSwgKCkgLT4gewogICAgICAgICAgICAvLyDlpoLmnpzmmK/liY3lj7DlupTnlKjlsLHkuI3lpITnkIYKICAgICAgICAgICAgaWYgKGlzQXBwRm9yZWdyb3VuZChhcHBJbmZvKSkgewogICAgICAgICAgICAgICAgTG9nLmQoYXBwSW5mby5nZXRLZXkoKSArICIgaXMgaW4gZm9yZWdyb3VuZCIpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CiAgICAgICAgICAgIC8vIOiOt+WPluebruagh+i/m+eoiwogICAgICAgICAgICBMaXN0PFByb2Nlc3NSZWNvcmQ+IHRhcmdldFByb2Nlc3NSZWNvcmRzID0gbWVtRGF0YS5nZXRUYXJnZXRQcm9jZXNzUmVjb3JkcyhhcHBJbmZvKTsKICAgICAgICAgICAgLy8g5aaC5p6c55uu5qCH6L+b56iL5Li656m65bCx5LiN5aSE55CGCiAgICAgICAgICAgIGlmICh0YXJnZXRQcm9jZXNzUmVjb3Jkcy5pc0VtcHR5KCkpIHsKICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgfQogICAgICAgICAgICAvLyDlkI7lj7DlupTnlKjmt7vliqDljIXlkI0KICAgICAgICAgICAgaWYgKG1lbURhdGEuZ2V0RnJlZXplckFwcFNldCgpLmFkZChhcHBJbmZvLmdldEtleSgpKSkgewogICAgICAgICAgICAgICAgLy8gdjAuOS4xMCBwb3J0OiDlkIzmraXov73liqAgYmFja2dyb3VuZC5jb25mIOaMgeS5heWMluiusOW9lQogICAgICAgICAgICAgICAgRnJlZXplckNvbmZpZy5hcHBlbmRCYWNrZ3JvdW5kKGFwcEluZm8uZ2V0S2V5KCkpOwogICAgICAgICAgICB9CiAgICAgICAgICAgIC8vIOetieW+heW6lOeUqOacquaJp+ihjOW5v+aSrQogICAgICAgICAgICBib29sZWFuIGJyb2FkY2FzdElkbGUgPSBtZW1EYXRhLndhaXRCcm9hZGNhc3RJZGxlKGFwcEluZm8pOwogICAgICAgICAgICBpZiAoIWJyb2FkY2FzdElkbGUpIHsKICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgfQogICAgICAgICAgICAvLyDnrYnlvoUgQmluZGVyIOS8keecoAogICAgICAgICAgICBib29sZWFuIGJpbmRlcklkbGUgPSB3YWl0QmluZGVySWRsZShhcHBJbmZvKTsKICAgICAgICAgICAgaWYgKCFiaW5kZXJJZGxlKSB7CiAgICAgICAgICAgICAgICByZXR1cm47CiAgICAgICAgICAgIH0KICAgICAgICAgICAgQXBwbGljYXRpb25JbmZvIGFwcGxpY2F0aW9uSW5mbyA9IG1lbURhdGEuZ2V0QWN0aXZpdHlNYW5hZ2VyU2VydmljZSgpLmdldEFwcGxpY2F0aW9uSW5mbyhhcHBJbmZvKTsKICAgICAgICAgICAgLy8g5a2Y5pS+5p2A5q276L+b56iLCiAgICAgICAgICAgIExpc3Q8UHJvY2Vzc1JlY29yZD4ga2lsbFByb2Nlc3NMaXN0ID0gbmV3IEFycmF5TGlzdDw+KCk7CiAgICAgICAgICAgIC8vIOmBjeWOhuebruagh+i/m+eoiwogICAgICAgICAgICBmb3IgKFByb2Nlc3NSZWNvcmQgdGFyZ2V0UHJvY2Vzc1JlY29yZCA6IHRhcmdldFByb2Nlc3NSZWNvcmRzKSB7CiAgICAgICAgICAgICAgICBpZiAoVGhyZWFkLmN1cnJlbnRUaHJlYWQoKS5pc0ludGVycnVwdGVkKCkpIHsKICAgICAgICAgICAgICAgICAgICBMb2cuZChhcHBJbmZvLmdldEtleSgpICsgIiBldmVudCB1cGRhdGVkIik7CiAgICAgICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgLy8g55uu5qCH6L+b56iL5ZCNCiAgICAgICAgICAgICAgICBTdHJpbmcgcHJvY2Vzc05hbWUgPSB0YXJnZXRQcm9jZXNzUmVjb3JkLmdldFByb2Nlc3NOYW1lKCk7CiAgICAgICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRLaWxsUHJvY2Vzc0xpc3QoKS5jb250YWlucyhwcm9jZXNzTmFtZSkpIHsKICAgICAgICAgICAgICAgICAgICBraWxsUHJvY2Vzc0xpc3QuYWRkKHRhcmdldFByb2Nlc3NSZWNvcmQpOwogICAgICAgICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICAgICAgICAvLyDlhrvnu5MKICAgICAgICAgICAgICAgICAgICBmcmVlemVVdGlscy5mcmVlemVyKHRhcmdldFByb2Nlc3NSZWNvcmQpOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGlmIChUaHJlYWQuY3VycmVudFRocmVhZCgpLmlzSW50ZXJydXB0ZWQoKSkgewogICAgICAgICAgICAgICAgTG9nLmQoYXBwSW5mby5nZXRLZXkoKSArICIgZXZlbnQgdXBkYXRlZCIpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CiAgICAgICAgICAgIFRocmVhZFV0aWxzLnNhZmVSdW4oKCkgLT4gewogICAgICAgICAgICAgICAgLy8g5aaC5p6c55m95ZCN5Y2V6L+b56iL5LiN5YyF5ZCr5Li76L+b56iL5bCx6YeK5pS+5ZSk6YaS6ZSBCiAgICAgICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRXaGl0ZVByb2Nlc3NMaXN0KCkuY29udGFpbnMoYXBwSW5mby5nZXRQYWNrYWdlTmFtZSgpKSkgewogICAgICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIC8vIOaYr+WQpuWUpOmGkumUgQogICAgICAgICAgICAgICAgbWVtRGF0YS5nZXRQb3dlck1hbmFnZXJTZXJ2aWNlKCkucmVsZWFzZVdha2VMb2NrcyhhcHBJbmZvLCBhcHBsaWNhdGlvbkluZm8udWlkKTsKICAgICAgICAgICAgICAgIC8vIG1lbURhdGEuZ2V0QWxhcm1NYW5nZXJTZXJ2aWNlKCkucmVtb3ZlKGFwcEluZm8sIGFwcGxpY2F0aW9uSW5mby51aWQpOwogICAgICAgICAgICAgICAgaWYgKCFtZW1EYXRhLmdldFNvY2tldEFwcHMoKS5jb250YWlucyhhcHBJbmZvLmdldFBhY2thZ2VOYW1lKCkpKSB7CiAgICAgICAgICAgICAgICAgICAgbWVtRGF0YS5nZXRBcHBTdGFuZGJ5Q29udHJvbGxlcigpLmZvcmNlSWRsZVN0YXRlKGFwcEluZm8sIHRydWUpOwogICAgICAgICAgICAgICAgICAgIG1lbURhdGEuZ2V0TmV0d29ya01hbmFnZW1lbnRTZXJ2aWNlKCkuc29ja2V0RGVzdHJveShhcHBJbmZvLCBhcHBsaWNhdGlvbkluZm8pOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9KTsKICAgICAgICAgICAgaWYgKFRocmVhZC5jdXJyZW50VGhyZWFkKCkuaXNJbnRlcnJ1cHRlZCgpKSB7CiAgICAgICAgICAgICAgICBMb2cuZChhcHBJbmZvLmdldEtleSgpICsgIiBldmVudCB1cGRhdGVkIik7CiAgICAgICAgICAgICAgICByZXR1cm47CiAgICAgICAgICAgIH0KICAgICAgICAgICAgVGhyZWFkVXRpbHMuc2FmZVJ1bigoKSAtPiB7CiAgICAgICAgICAgICAgICBmcmVlemVVdGlscy5raWxsKGtpbGxQcm9jZXNzTGlzdCk7CiAgICAgICAgICAgIH0pOwogICAgICAgICAgICBpZiAocnVubmFibGUgIT0gbnVsbCkgewogICAgICAgICAgICAgICAgcnVubmFibGUucnVuKCk7CiAgICAgICAgICAgIH0KICAgICAgICB9LCBkZWxheSk7CiAgICB9CgogICAgLyoqCiAgICAgKiDlupTnlKjmmK/lkKbliY3lj7AuCiAgICAgKi8KICAgIHB1YmxpYyBib29sZWFuIGlzQXBwRm9yZWdyb3VuZChBcHBJbmZvIGFwcEluZm8pIHsKICAgICAgICAvLyDojrflj5bljIXlkI0KICAgICAgICBTdHJpbmcgcGFja2FnZU5hbWUgPSBhcHBJbmZvLmdldFBhY2thZ2VOYW1lKCk7CiAgICAgICAgaWYgKG1lbURhdGEuZ2V0VG9wQXBwcygpLmNvbnRhaW5zKHBhY2thZ2VOYW1lKSkgeyAvLyDlpoLmnpzorr7nva7lkI7lj7DnuqfliKvkuLrlj6/op4Hnqpflj6MKICAgICAgICAgICAgLy8g5Yik5pat5piv5ZCm5Y+v6KeB56qX5Y+jCiAgICAgICAgICAgIHJldHVybiBtZW1EYXRhLmdldEFjdGl2aXR5TWFuYWdlclNlcnZpY2UoKS5pc1RvcEFwcChhcHBJbmZvKTsKICAgICAgICB9IGVsc2UgaWYgKG1lbURhdGEuZ2V0RGlyZWN0QXBwcygpLmNvbnRhaW5zKHBhY2thZ2VOYW1lKSkgeyAvLyDlpoLmnpzorr7nva7kuoblvLrliLblhrvnu5MKICAgICAgICAgICAgLy8g55u05o6l6K6k5Li65LiN5Zyo5YmN5Y+wCiAgICAgICAgICAgIHJldHVybiBmYWxzZTsKICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAvLyDpu5jorqTliKTmlq3mmK/lkKbmnInliY3lj7DmnI3liqEKICAgICAgICAgICAgcmV0dXJuIG1lbURhdGEuZ2V0QWN0aXZpdHlNYW5hZ2VyU2VydmljZSgpLmlzRm9yZWdyb3VuZEFwcChhcHBJbmZvKTsKICAgICAgICB9CiAgICB9CgogICAgLyoqCiAgICAgKiDkuLTml7bop6PlhrsuCiAgICAgKgogICAgICogQHBhcmFtIHVpZCDlupTnlKhJRAogICAgICovCiAgICBwdWJsaWMgdm9pZCB0ZW1wb3JhcnlVbmZyZWV6ZUlmTmVlZChpbnQgdWlkLCBTdHJpbmcgcmVhc29uKSB7CiAgICAgICAgaWYgKHVpZCA8IDEwMDAwKSB7CiAgICAgICAgICAgIHJldHVybjsKICAgICAgICB9CiAgICAgICAgU3RyaW5nIGtleSA9IG1lbURhdGEuZ2V0QWN0aXZpdHlNYW5hZ2VyU2VydmljZSgpLmdldE5hbWVGb3JVaWQodWlkKTsKICAgICAgICBpZiAoa2V5ID09IG51bGwpIHsKICAgICAgICAgICAgTG9nLncoInVpZCAgIiArIHVpZCArICIgIG5vdCBmb3VuZCIpOwogICAgICAgICAgICByZXR1cm47CiAgICAgICAgfQogICAgICAgIGlmICghbWVtRGF0YS5nZXRGcmVlemVyQXBwU2V0KCkuY29udGFpbnMoa2V5KSkgewogICAgICAgICAgICByZXR1cm47CiAgICAgICAgfQogICAgICAgIEFwcEluZm8gYXBwSW5mbyA9IEFwcEluZm8uZ2V0SW5zdGFuY2Uoa2V5KTsKICAgICAgICBMb2cuaShhcHBJbmZvLmdldEtleSgpICsgIiAiICsgcmVhc29uKTsKICAgICAgICBvblJlc3VtZSh0cnVlLCBhcHBJbmZvLCB0cnVlLCAoKSAtPiB7CiAgICAgICAgICAgIG9uUGF1c2UodHJ1ZSwgYXBwSW5mbywgMzAwMCk7CiAgICAgICAgfSk7CiAgICB9CgogICAgLyoqCiAgICAgKiB2MC45LjEwIHBvcnQ6IFI0IOS4gOasoeaAp+mHjeaWsOWGu+e7ky4KICAgICAqIDxwPgogICAgICog5ZCv5Yqo5ZCO56ys5LiA5qyh5Y+R55SfIEFjdGl2aXR5IOWIh+aNouaXtuinpuWPke+8mgogICAgICog6YGN5Y6GIGZyZWV6ZXJBcHBTZXQg5Lit55qEIuW6lOW3suWGu+e7kyLlupTnlKjvvIwKICAgICAqIDx1bD4KICAgICAqICAgPGxpPuWJjeWPsOW6lOeUqO+8muS7jumbhuWQiOenu+mZpCArIOenu+mZpCBiYWNrZ3JvdW5kLmNvbmYg6K6w5b2VPC9saT4KICAgICAqICAgPGxpPuWQjuWPsOW6lOeUqO+8mumHjeaWsOaJp+ihjOWGu+e7k++8jOehruS/nei/m+eoi+ecn+ato+i/m+WFpSBjZ3JvdXAgZnJlZXplcjwvbGk+CiAgICAgKiA8L3VsPgogICAgICog6K+l5pa55rOV5Y+q5omn6KGM5LiA5qyh77yI55SxIEFjdGl2aXR5U3dpdGNoSG9vay5zUmVmcm96ZW4g5o6n5Yi277yJ44CCCiAgICAgKi8KICAgIHB1YmxpYyB2b2lkIHJlZnJlZXplQWxsKCkgewogICAgICAgIFRocmVhZFV0aWxzLm5ld1RocmVhZCgoKSAtPiB7CiAgICAgICAgICAgIHRyeSB7CiAgICAgICAgICAgICAgICBpZiAobWVtRGF0YS5nZXRBY3Rpdml0eU1hbmFnZXJTZXJ2aWNlKCkgPT0gbnVsbCkgewogICAgICAgICAgICAgICAgICAgIExvZy53KCJSNDogYWN0aXZpdHlNYW5hZ2VyU2VydmljZSBub3QgcmVhZHksIHNraXAiKTsKICAgICAgICAgICAgICAgICAgICByZXR1cm47CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBNYXA8U3RyaW5nLCBMaXN0PFByb2Nlc3NSZWNvcmQ+PiBwcm9jZXNzTWFwID0gbWVtRGF0YS5nZXRBY3Rpdml0eU1hbmFnZXJTZXJ2aWNlKCkuZ2V0UHJvY2Vzc0xpc3QoKS5nZXRQcm9jZXNzTWFwKCk7CiAgICAgICAgICAgICAgICAvLyDmi7fotJ3lv6vnhafpgb/lhY3lubblj5Hkv67mlLkKICAgICAgICAgICAgICAgIExpc3Q8U3RyaW5nPiBrZXlzID0gbmV3IEFycmF5TGlzdDw+KG1lbURhdGEuZ2V0RnJlZXplckFwcFNldCgpKTsKICAgICAgICAgICAgICAgIGlmIChrZXlzLmlzRW1wdHkoKSkgewogICAgICAgICAgICAgICAgICAgIExvZy5pKCJSNDogbm8gYmFja2dyb3VuZCBhcHBzIHRvIHJlZnJlZXplIik7CiAgICAgICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgTG9nLmkoIlI0OiBzdGFydCByZWZyZWV6ZSAiICsga2V5cy5zaXplKCkgKyAiIGJhY2tncm91bmQgYXBwcyIpOwogICAgICAgICAgICAgICAgaW50IHJlZnJvemVuID0gMDsKICAgICAgICAgICAgICAgIGludCBza2lwcGVkID0gMDsKICAgICAgICAgICAgICAgIGludCByZW1vdmVkID0gMDsKICAgICAgICAgICAgICAgIGZvciAoU3RyaW5nIGtleSA6IGtleXMpIHsKICAgICAgICAgICAgICAgICAgICB0cnkgewogICAgICAgICAgICAgICAgICAgICAgICBBcHBJbmZvIGFwcEluZm8gPSBBcHBJbmZvLmdldEluc3RhbmNlKGtleSk7CiAgICAgICAgICAgICAgICAgICAgICAgIC8vIOWJjeWPsOW6lOeUqO+8muS7juWGu+e7k+mbhuWQiOenu+mZpCArIOWQjOatpSBiYWNrZ3JvdW5kLmNvbmYKICAgICAgICAgICAgICAgICAgICAgICAgaWYgKGlzQXBwRm9yZWdyb3VuZChhcHBJbmZvKSkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKG1lbURhdGEuZ2V0RnJlZXplckFwcFNldCgpLnJlbW92ZShrZXkpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRnJlZXplckNvbmZpZy5yZW1vdmVCYWNrZ3JvdW5kKGtleSk7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVtb3ZlZCsrOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgTG9nLmQoIlI0OiAiICsga2V5ICsgIiBpcyBmb3JlZ3JvdW5kLCByZW1vdmVkIGZyb20gYmFja2dyb3VuZCBzZXQiKTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlOwogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgICAgIC8vIOWQjuWPsOW6lOeUqO+8mumHjeaWsOWGu+e7kwogICAgICAgICAgICAgICAgICAgICAgICBMaXN0PFByb2Nlc3NSZWNvcmQ+IHByb2Nlc3NSZWNvcmRzID0gcHJvY2Vzc01hcC5nZXQoYXBwSW5mby5nZXRQYWNrYWdlTmFtZSgpKTsKICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHByb2Nlc3NSZWNvcmRzID09IG51bGwgfHwgcHJvY2Vzc1JlY29yZHMuaXNFbXB0eSgpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBMb2cuZCgiUjQ6ICIgKyBrZXkgKyAiIGhhcyBubyBydW5uaW5nIHByb2Nlc3Nlcywgc2tpcCIpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgc2tpcHBlZCsrOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgY29udGludWU7CiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICAgICAgYm9vbGVhbiByZWZyb3plblRoaXMgPSBmYWxzZTsKICAgICAgICAgICAgICAgICAgICAgICAgZm9yIChQcm9jZXNzUmVjb3JkIHByb2Nlc3NSZWNvcmQgOiBwcm9jZXNzUmVjb3JkcykgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCFtZW1EYXRhLmlzVGFyZ2V0UHJvY2VzcyhhcHBJbmZvLmdldFVzZXJJZCgpLCBwcm9jZXNzUmVjb3JkKSkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmcmVlemVVdGlscy5mcmVlemVyKHByb2Nlc3NSZWNvcmQpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIExvZy5kKCJSNDogcmVmcm96ZW4gIiArIHByb2Nlc3NSZWNvcmQuZ2V0UHJvY2Vzc05hbWUoKSArICIgKHBpZD0iICsgcHJvY2Vzc1JlY29yZC5nZXRQaWQoKSArICIpIik7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVmcm96ZW5UaGlzID0gdHJ1ZTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIH0gY2F0Y2ggKFRocm93YWJsZSB0aHJvd2FibGUpIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBMb2cuZSgiUjQ6IHJlZnJlZXplICIgKyBwcm9jZXNzUmVjb3JkLmdldFByb2Nlc3NOYW1lKCkgKyAiIGZhaWxlZCIsIHRocm93YWJsZSk7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHJlZnJvemVuVGhpcykgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVmcm96ZW4rKzsKICAgICAgICAgICAgICAgICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNraXBwZWQrKzsKICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIH0gY2F0Y2ggKFRocm93YWJsZSB0aHJvd2FibGUpIHsKICAgICAgICAgICAgICAgICAgICAgICAgTG9nLmUoIlI0OiByZWZyZWV6ZSAiICsga2V5ICsgIiBmYWlsZWQiLCB0aHJvd2FibGUpOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIExvZy5pKCJSNDogcmVmcmVlemUgY29tcGxldGUsIHJlZnJvemVuPSIgKyByZWZyb3plbiArICIgc2tpcHBlZD0iICsgc2tpcHBlZCArICIgcmVtb3ZlZD0iICsgcmVtb3ZlZCk7CiAgICAgICAgICAgIH0gY2F0Y2ggKFRocm93YWJsZSB0aHJvd2FibGUpIHsKICAgICAgICAgICAgICAgIExvZy5lKCJSNDogcmVmcmVlemUgZmFpbGVkIiwgdGhyb3dhYmxlKTsKICAgICAgICAgICAgfSBmaW5hbGx5IHsKICAgICAgICAgICAgICAgIC8vIHYwLjkuMTAgcG9ydCBmaXggKE1BSk9SLTEwLzEyKTog5peg6K66IFI0IOaIkOWKn+aIluWksei0pemDveagh+iusOWujOaIkO+8jOe7k+adn+eql+WPo+acnwogICAgICAgICAgICAgICAgLy8g6YG/5YWNQnJvYWRjYXN0RGVsaXZlckhvb2sg5rC45LmF6Lez6L+HIGNsZWFyKCkg5a+86Ie05Ya757uT5bqU55So5rC45LmF5o6l5pS25bm/5pKtCiAgICAgICAgICAgICAgICByNENvbXBsZXRlZC5zZXQodHJ1ZSk7CiAgICAgICAgICAgICAgICBMb2cuaSgiUjQ6IHdpbmRvdyBwZXJpb2QgZW5kZWQsIGJyb2FkY2FzdCBndWFyZCByZWxlYXNlZCIpOwogICAgICAgICAgICB9CiAgICAgICAgfSk7CiAgICB9CgoKICAgIC8qKgogICAgICogQmluZGVy54q25oCBLgogICAgICoKICAgICAqIEBwYXJhbSB1aWQg5bqU55SoSUQKICAgICAqIEByZXR1cm4gW0lETEV8QlVTWV0KICAgICAqLwogICAgcHVibGljIGludCBiaW5kZXJTdGF0ZShpbnQgdWlkKSB7CiAgICAgICAgdHJ5IHsKICAgICAgICAgICAgQ2xhc3M8Pz4gR3JlZXplTWFuYWdlclNlcnZpY2UgPSBSZWZsZWN0aW9uVXRpbHMuZmluZENsYXNzKENsYXNzQ29uc3RhbnRzLkdyZWV6ZU1hbmFnZXJTZXJ2aWNlLCBjbGFzc0xvYWRlcik7CiAgICAgICAgICAgIHJldHVybiAoaW50KSBSZWZsZWN0aW9uVXRpbHMuY2FsbFN0YXRpY01ldGhvZChHcmVlemVNYW5hZ2VyU2VydmljZSwgTWV0aG9kQ29uc3RhbnRzLm5RdWVyeUJpbmRlciwgdWlkKTsKICAgICAgICB9IGNhdGNoIChUaHJvd2FibGUgaWdub3JlZCkgewogICAgICAgIH0KICAgICAgICAvLyDmiqXplJnlsLHov5Tlm57lt7LkvJHnnKDvvIznm7jlvZPkuo7ov5nkuKrlip/og73kuI3lrZjlnKgKICAgICAgICByZXR1cm4gQklOREVSX0lETEU7CiAgICB9CgoKICAgIC8qKgogICAgICog562J5b6FQmluZGVy5LyR55ygCiAgICAgKgogICAgICogQHBhcmFtIGFwcEluZm8g5YyF5ZCNCiAgICAgKi8KICAgIHB1YmxpYyBib29sZWFuIHdhaXRCaW5kZXJJZGxlKEFwcEluZm8gYXBwSW5mbykgewogICAgICAgIC8vIOiOt+WPluW6lOeUqOS/oeaBrwogICAgICAgIEFwcGxpY2F0aW9uSW5mbyBhcHBsaWNhdGlvbkluZm8gPSBtZW1EYXRhLmdldEFjdGl2aXR5TWFuYWdlclNlcnZpY2UoKS5nZXRBcHBsaWNhdGlvbkluZm8oYXBwSW5mbyk7CiAgICAgICAgaWYgKGFwcGxpY2F0aW9uSW5mbyA9PSBudWxsKSB7CiAgICAgICAgICAgIHJldHVybiB0cnVlOwogICAgICAgIH0KICAgICAgICAvLyDph43or5XmrKHmlbAKICAgICAgICBpbnQgcmV0cnkgPSAwOwogICAgICAgIC8vIDPmrKHph43or5XvvIzlpoLmnpzkuI3ov5vkvJHnnKDlsLHnm7TmjqXlhrvnu5PkuoYKICAgICAgICB3aGlsZSAoYmluZGVyU3RhdGUoYXBwbGljYXRpb25JbmZvLnVpZCkgIT0gQklOREVSX0lETEUgJiYgcmV0cnkgPCAzKSB7CiAgICAgICAgICAgIExvZy53KGFwcEluZm8uZ2V0S2V5KCkgKyAiIGJpbmRlciBidXN5Iik7CiAgICAgICAgICAgIGJvb2xlYW4gc2xlZXAgPSBUaHJlYWRVdGlscy5zbGVlcCgxMDAwKTsKICAgICAgICAgICAgaWYgKCFzbGVlcCkgewogICAgICAgICAgICAgICAgTG9nLmQoYXBwSW5mby5nZXRLZXkoKSArICIgYmluZGVyIGlkbGUgd2FpdCBjYW5jZWxlZCIpOwogICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgICAgICB9CiAgICAgICAgICAgIHJldHJ5Kys7CiAgICAgICAgfQogICAgICAgIExvZy5kKGFwcEluZm8uZ2V0S2V5KCkgKyAiIGJpbmRlciBpZGxlIik7CiAgICAgICAgcmV0dXJuIHRydWU7CiAgICB9Cgp9Cg==
+package cn.myflv.noactive.core.handler;
+
+import android.content.pm.ApplicationInfo;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import cn.myflv.noactive.constant.ClassConstants;
+import cn.myflv.noactive.constant.MethodConstants;
+import cn.myflv.noactive.core.entity.AppInfo;
+import cn.myflv.noactive.core.entity.MemData;
+import cn.myflv.noactive.core.server.ProcessRecord;
+import cn.myflv.noactive.core.utils.FreezeUtils;
+import cn.myflv.noactive.core.utils.FreezerConfig;
+import cn.myflv.noactive.core.utils.Log;
+import cn.myflv.noactive.core.utils.ThreadUtils;
+import cn.myflv.noactive.utils.ReflectionUtils;
+
+public class FreezerHandler {
+    /**
+     * Binder休眠.
+     */
+    private final static int BINDER_IDLE = 0;
+    private final ClassLoader classLoader;
+    private final MemData memData;
+    private final FreezeUtils freezeUtils;
+
+    /**
+     * v0.9.10 port fix (MAJOR-10/12): R4 完成标志.
+     * <p>
+     * 启动后 refreezeAll() 执行完毕置 true。在 r4Completed=false 期间：
+     * - freezerAppSet 已加载 background.conf 的 key
+     * - 但实际进程尚未物理冻结
+     * - BroadcastDeliverHook 应跳过 receiverList.clear()，避免误清空开机后首批广播
+     */
+    private static final AtomicBoolean r4Completed = new AtomicBoolean(false);
+
+    /**
+     * R4 是否已完成（供 BroadcastDeliverHook 在清空广播前守护判断）.
+     */
+    public static boolean isR4Completed() {
+        return r4Completed.get();
+    }
+
+    public FreezerHandler(ClassLoader classLoader, MemData memData, FreezeUtils freezeUtils) {
+        this.classLoader = classLoader;
+        this.memData = memData;
+        this.freezeUtils = freezeUtils;
+        if (FreezerConfig.isConfigOn(FreezerConfig.BootFreeze)) {
+            enableBootFreeze();
+        }
+        if (FreezerConfig.isConfigOn(FreezerConfig.IntervalUnfreeze)) {
+            enableIntervalUnfreeze();
+        }
+        if (FreezerConfig.isConfigOn(FreezerConfig.IntervalFreeze)) {
+            enableIntervalFreeze();
+        }
+    }
+
+    /**
+     * 开启开机冻结
+     */
+    public void enableBootFreeze() {
+        ThreadUtils.scheduleDelay(() -> {
+            // v0.9.10 port fix (MINOR-23): 防御 activityManagerService 未就绪时 NPE
+            if (memData.getActivityManagerService() == null) {
+                Log.w("Boot freeze: activityManagerService not ready, skip");
+                return;
+            }
+            Log.i("Boot freeze start");
+            // 获取包名分组进程
+            Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
+            // 冻结的APP
+            Set<String> frozenApps = new HashSet<>();
+            // 遍历正在运行的进程
+            for (String key : processMap.keySet()) {
+                AppInfo appInfo = AppInfo.getInstance(key);
+                ThreadUtils.runWithLock(appInfo.getKey(), () -> {
+                    // 获取应用进程
+                    List<ProcessRecord> processRecords = processMap.get(appInfo.getPackageName());
+                    if (processRecords == null) {
+                        return;
+                    }
+                    // 冻结
+                    for (ProcessRecord processRecord : processRecords) {
+                        if (memData.isTargetProcess(appInfo.getUserId(), processRecord)) {
+                            freezeUtils.freezer(processRecord);
+                            frozenApps.add(appInfo.getKey());
+                        }
+                    }
+                });
+            }
+            Log.d("Frozen app list: " + frozenApps);
+            // v0.9.10 port fix (MINOR-13): 逐 key 添加并判断是否新增，避免 background.conf 重复行
+            for (String key : frozenApps) {
+                if (memData.getFreezerAppSet().add(key)) {
+                    FreezerConfig.appendBackground(key);
+                }
+            }
+        }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.BootFreezeDelay, "1")));
+        Log.i("Boot freeze");
+    }
+
+    /**
+     * 开启定时冻结
+     */
+    public void enableIntervalFreeze() {
+        ThreadUtils.scheduleInterval(() -> {
+            // v0.9.10 port fix (MINOR-23): 防御 activityManagerService 未就绪时 NPE
+            if (memData.getActivityManagerService() == null) {
+                Log.w("Interval freeze: activityManagerService not ready, skip");
+                return;
+            }
+            Log.i("Interval freeze start");
+            // 获取包名分组进程
+            Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
+            // 冻结的APP
+            Set<String> frozenApps = new HashSet<>();
+            // 遍历正在运行的进程
+            for (String key : processMap.keySet()) {
+                AppInfo appInfo = AppInfo.getInstance(key);
+                ThreadUtils.runWithLock(appInfo.getKey(), () -> {
+                    // 再次检查是否被冻结
+                    if (!memData.getFreezerAppSet().contains(key)) {
+                        return;
+                    }
+                    // 获取应用进程
+                    List<ProcessRecord> processRecords = processMap.get(appInfo.getPackageName());
+                    if (processRecords == null) {
+                        return;
+                    }
+                    // 冻结
+                    for (ProcessRecord processRecord : processRecords) {
+                        if (memData.isTargetProcess(appInfo.getUserId(), processRecord)) {
+                            freezeUtils.freezer(processRecord);
+                            frozenApps.add(appInfo.getKey());
+                        }
+                    }
+                });
+            }
+            Log.d("Frozen app list: " + frozenApps);
+            // v0.9.10 port fix (MINOR-13): 逐 key 添加并判断是否新增，避免 background.conf 重复行
+            for (String key : frozenApps) {
+                if (memData.getFreezerAppSet().add(key)) {
+                    FreezerConfig.appendBackground(key);
+                }
+            }
+        }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.IntervalFreezeDelay, "1")));
+        Log.i("Interval freeze");
+    }
+
+    /**
+     * 定时轮番解冻
+     */
+    public void enableIntervalUnfreeze() {
+        ThreadUtils.scheduleInterval(() -> {
+            Log.i("Interval unfreeze start");
+            // 遍历被冻结的进程
+            for (String key : memData.getFreezerAppSet()) {
+                AppInfo appInfo = AppInfo.getInstance(key);
+                Log.d(appInfo.getKey() + " interval unfreeze start");
+                // 解冻
+                onResume(true, appInfo, true, () -> {
+                    // 冻结
+                    onPause(true, appInfo, 3000, () -> {
+                        Log.d(appInfo.getKey() + " interval unfreeze finish");
+                    });
+                });
+                // 结束循环
+                // 相当于只解冻没有最久没有打开的 APP
+                break;
+            }
+        }, Integer.parseInt(FreezerConfig.getString(FreezerConfig.IntervalUnfreezeDelay, "1")));
+        Log.i("Interval unfreeze");
+    }
+
+
+    public void onResume(boolean handle, AppInfo appInfo) {
+        onResume(handle, appInfo, false, null);
+    }
+
+    /**
+     * APP切换至前台.
+     *
+     * @param appInfo 事件信息
+     */
+    public void onResume(boolean handle, AppInfo appInfo, boolean temporary, Runnable runnable) {
+        // 不处理就跳过
+        if (!handle) {
+            return;
+        }
+        ThreadUtils.thawThread(appInfo.getKey(), () -> {
+            ThreadUtils.safeRun(() -> {
+                if (temporary) {
+                    return;
+                }
+                // 获取包名
+                String packageName = appInfo.getPackageName();
+                // 白名单主进程跳过
+                if (memData.getWhiteProcessList().contains(packageName)) {
+                    return;
+                }
+                if (!memData.getSocketApps().contains(packageName)) {
+                    // 恢复StandBy
+                    memData.getAppStandbyController().forceIdleState(appInfo, false);
+                }
+            });
+            // 获取目标进程
+            List<ProcessRecord> targetProcessRecords = memData.getTargetProcessRecords(appInfo);
+            // 解冻
+            freezeUtils.unFreezer(targetProcessRecords);
+            // 移除被冻结APP
+            if (memData.getFreezerAppSet().remove(appInfo.getKey())) {
+                // v0.9.10 port: 同步移除 background.conf 持久化记录
+                FreezerConfig.removeBackground(appInfo.getKey());
+            }
+            if (Thread.currentThread().isInterrupted()) {
+                Log.d(appInfo.getKey() + " event updated");
+                return;
+            }
+
+            if (runnable != null) {
+                runnable.run();
+            }
+        });
+    }
+
+    public void onPause(boolean handle, AppInfo appInfo) {
+        onPause(handle, appInfo, 0, null);
+    }
+
+    public void onPause(boolean handle, AppInfo appInfo, long delay) {
+        onPause(handle, appInfo, delay, null);
+    }
+
+    /**
+     * APP切换至后台.
+     *
+     * @param appInfo 包名
+     */
+    public void onPause(boolean handle, AppInfo appInfo, long delay, Runnable runnable) {
+        // 不处理就跳过
+        if (!handle) {
+            return;
+        }
+        ThreadUtils.newThread(appInfo.getKey(), () -> {
+            // 如果是前台应用就不处理
+            if (isAppForeground(appInfo)) {
+                Log.d(appInfo.getKey() + " is in foreground");
+                return;
+            }
+            // 获取目标进程
+            List<ProcessRecord> targetProcessRecords = memData.getTargetProcessRecords(appInfo);
+            // 如果目标进程为空就不处理
+            if (targetProcessRecords.isEmpty()) {
+                return;
+            }
+            // 后台应用添加包名
+            if (memData.getFreezerAppSet().add(appInfo.getKey())) {
+                // v0.9.10 port: 同步追加 background.conf 持久化记录
+                FreezerConfig.appendBackground(appInfo.getKey());
+            }
+            // 等待应用未执行广播
+            boolean broadcastIdle = memData.waitBroadcastIdle(appInfo);
+            if (!broadcastIdle) {
+                return;
+            }
+            // 等待 Binder 休眠
+            boolean binderIdle = waitBinderIdle(appInfo);
+            if (!binderIdle) {
+                return;
+            }
+            ApplicationInfo applicationInfo = memData.getActivityManagerService().getApplicationInfo(appInfo);
+            // 存放杀死进程
+            List<ProcessRecord> killProcessList = new ArrayList<>();
+            // 遍历目标进程
+            for (ProcessRecord targetProcessRecord : targetProcessRecords) {
+                if (Thread.currentThread().isInterrupted()) {
+                    Log.d(appInfo.getKey() + " event updated");
+                    return;
+                }
+                // 目标进程名
+                String processName = targetProcessRecord.getProcessName();
+                if (memData.getKillProcessList().contains(processName)) {
+                    killProcessList.add(targetProcessRecord);
+                } else {
+                    // 冻结
+                    freezeUtils.freezer(targetProcessRecord);
+                }
+            }
+            if (Thread.currentThread().isInterrupted()) {
+                Log.d(appInfo.getKey() + " event updated");
+                return;
+            }
+            ThreadUtils.safeRun(() -> {
+                // 如果白名单进程不包含主进程就释放唤醒锁
+                if (memData.getWhiteProcessList().contains(appInfo.getPackageName())) {
+                    return;
+                }
+                // 是否唤醒锁
+                memData.getPowerManagerService().releaseWakeLocks(appInfo, applicationInfo.uid);
+                // memData.getAlarmMangerService().remove(appInfo, applicationInfo.uid);
+                if (!memData.getSocketApps().contains(appInfo.getPackageName())) {
+                    memData.getAppStandbyController().forceIdleState(appInfo, true);
+                    memData.getNetworkManagementService().socketDestroy(appInfo, applicationInfo);
+                }
+            });
+            if (Thread.currentThread().isInterrupted()) {
+                Log.d(appInfo.getKey() + " event updated");
+                return;
+            }
+            ThreadUtils.safeRun(() -> {
+                freezeUtils.kill(killProcessList);
+            });
+            if (runnable != null) {
+                runnable.run();
+            }
+        }, delay);
+    }
+
+    /**
+     * 应用是否前台.
+     */
+    public boolean isAppForeground(AppInfo appInfo) {
+        // 获取包名
+        String packageName = appInfo.getPackageName();
+        if (memData.getTopApps().contains(packageName)) { // 如果设置后台级别为可见窗口
+            // 判断是否可见窗口
+            return memData.getActivityManagerService().isTopApp(appInfo);
+        } else if (memData.getDirectApps().contains(packageName)) { // 如果设置了强制冻结
+            // 直接认为不在前台
+            return false;
+        } else {
+            // 默认判断是否有前台服务
+            return memData.getActivityManagerService().isForegroundApp(appInfo);
+        }
+    }
+
+    /**
+     * 临时解冻.
+     *
+     * @param uid 应用ID
+     */
+    public void temporaryUnfreezeIfNeed(int uid, String reason) {
+        if (uid < 10000) {
+            return;
+        }
+        String key = memData.getActivityManagerService().getNameForUid(uid);
+        if (key == null) {
+            Log.w("uid  " + uid + "  not found");
+            return;
+        }
+        if (!memData.getFreezerAppSet().contains(key)) {
+            return;
+        }
+        AppInfo appInfo = AppInfo.getInstance(key);
+        Log.i(appInfo.getKey() + " " + reason);
+        onResume(true, appInfo, true, () -> {
+            onPause(true, appInfo, 3000);
+        });
+    }
+
+    /**
+     * v0.9.10 port: R4 一次性重新冻结.
+     * <p>
+     * 启动后第一次发生 Activity 切换时触发：
+     * 遍历 freezerAppSet 中的"应已冻结"应用，
+     * <ul>
+     *   <li>前台应用：从集合移除 + 移除 background.conf 记录</li>
+     *   <li>后台应用：重新执行冻结，确保进程真正进入 cgroup freezer</li>
+     * </ul>
+     * 该方法只执行一次（由 ActivitySwitchHook.sRefrozen 控制）。
+     */
+    public void refreezeAll() {
+        ThreadUtils.newThread(() -> {
+            try {
+                if (memData.getActivityManagerService() == null) {
+                    Log.w("R4: activityManagerService not ready, skip");
+                    return;
+                }
+                Map<String, List<ProcessRecord>> processMap = memData.getActivityManagerService().getProcessList().getProcessMap();
+                // 拷贝快照避免并发修改
+                List<String> keys = new ArrayList<>(memData.getFreezerAppSet());
+                if (keys.isEmpty()) {
+                    Log.i("R4: no background apps to refreeze");
+                    return;
+                }
+                Log.i("R4: start refreeze " + keys.size() + " background apps");
+                int refrozen = 0;
+                int skipped = 0;
+                int removed = 0;
+                for (String key : keys) {
+                    try {
+                        AppInfo appInfo = AppInfo.getInstance(key);
+                        // 前台应用：从冻结集合移除 + 同步 background.conf
+                        if (isAppForeground(appInfo)) {
+                            if (memData.getFreezerAppSet().remove(key)) {
+                                FreezerConfig.removeBackground(key);
+                                removed++;
+                            }
+                            Log.d("R4: " + key + " is foreground, removed from background set");
+                            continue;
+                        }
+                        // 后台应用：重新冻结
+                        List<ProcessRecord> processRecords = processMap.get(appInfo.getPackageName());
+                        if (processRecords == null || processRecords.isEmpty()) {
+                            Log.d("R4: " + key + " has no running processes, skip");
+                            skipped++;
+                            continue;
+                        }
+                        boolean refrozenThis = false;
+                        for (ProcessRecord processRecord : processRecords) {
+                            if (!memData.isTargetProcess(appInfo.getUserId(), processRecord)) {
+                                continue;
+                            }
+                            try {
+                                freezeUtils.freezer(processRecord);
+                                Log.d("R4: refrozen " + processRecord.getProcessName() + " (pid=" + processRecord.getPid() + ")");
+                                refrozenThis = true;
+                            } catch (Throwable throwable) {
+                                Log.e("R4: refreeze " + processRecord.getProcessName() + " failed", throwable);
+                            }
+                        }
+                        if (refrozenThis) {
+                            refrozen++;
+                        } else {
+                            skipped++;
+                        }
+                    } catch (Throwable throwable) {
+                        Log.e("R4: refreeze " + key + " failed", throwable);
+                    }
+                }
+                Log.i("R4: refreeze complete, refrozen=" + refrozen + " skipped=" + skipped + " removed=" + removed);
+            } catch (Throwable throwable) {
+                Log.e("R4: refreeze failed", throwable);
+            } finally {
+                // v0.9.10 port fix (MAJOR-10/12): 无论 R4 成功或失败都标记完成，结束窗口期
+                // 避免BroadcastDeliverHook 永久跳过 clear() 导致冻结应用永久接收广播
+                r4Completed.set(true);
+                Log.i("R4: window period ended, broadcast guard released");
+            }
+        });
+    }
+
+
+    /**
+     * Binder状态.
+     *
+     * @param uid 应用ID
+     * @return [IDLE|BUSY]
+     */
+    public int binderState(int uid) {
+        try {
+            Class<?> GreezeManagerService = ReflectionUtils.findClass(ClassConstants.GreezeManagerService, classLoader);
+            return (int) ReflectionUtils.callStaticMethod(GreezeManagerService, MethodConstants.nQueryBinder, uid);
+        } catch (Throwable ignored) {
+        }
+        // 报错就返回已休眠，相当于这个功能不存在
+        return BINDER_IDLE;
+    }
+
+
+    /**
+     * 等待Binder休眠
+     *
+     * @param appInfo 包名
+     */
+    public boolean waitBinderIdle(AppInfo appInfo) {
+        // 获取应用信息
+        ApplicationInfo applicationInfo = memData.getActivityManagerService().getApplicationInfo(appInfo);
+        if (applicationInfo == null) {
+            return true;
+        }
+        // 重试次数
+        int retry = 0;
+        // 3次重试，如果不进休眠就直接冻结了
+        while (binderState(applicationInfo.uid) != BINDER_IDLE && retry < 3) {
+            Log.w(appInfo.getKey() + " binder busy");
+            boolean sleep = ThreadUtils.sleep(1000);
+            if (!sleep) {
+                Log.d(appInfo.getKey() + " binder idle wait canceled");
+                return false;
+            }
+            retry++;
+        }
+        Log.d(appInfo.getKey() + " binder idle");
+        return true;
+    }
+
+}
