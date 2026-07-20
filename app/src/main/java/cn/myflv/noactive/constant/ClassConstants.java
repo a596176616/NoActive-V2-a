@@ -28,7 +28,7 @@ public interface ClassConstants {
     String ProfilerInfo = "android.app.ProfilerInfo";
     String SleepModeControllerNew = "com.miui.powerkeeper.statemachine.SleepModeControllerNew";
     String LocalServices = "com.android.server.LocalServices";
-    String PowerManagerService = " com.android.server.power.PowerManagerService";
+    String PowerManagerService = "com.android.server.power.PowerManagerService";
     String ProcessManager = "miui.process.ProcessManager";
     String ProcessConfig = "miui.process.ProcessConfig";
 
