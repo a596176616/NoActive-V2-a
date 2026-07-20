@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 应用列表容器 - edge-to-edge 深色基底 + 4% white 分割线 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/geek_bg_base"
     android:orientation="vertical"
-    android:paddingTop="8dp">
+    android:paddingTop="@dimen/geek_space_2">
 
     <ListView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
         android:clipToPadding="false"
-        android:paddingBottom="16dp" />
+        android:divider="@drawable/geek_list_divider"
+        android:dividerHeight="1dp"
+        android:paddingHorizontal="@dimen/geek_space_4"
+        android:paddingBottom="@dimen/geek_space_8"
+        android:scrollbars="none" />
 </LinearLayout>

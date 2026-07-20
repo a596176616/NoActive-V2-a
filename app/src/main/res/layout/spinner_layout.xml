@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: Spinner 选中项 - 紫色文字 + 下拉箭头 -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:drawablePadding="15dp"
-    android:textColor="#6d6d6d"
-    android:textSize="18sp"
-    app:drawableRightCompat="@drawable/ic_up_down">
-
-</TextView>
+    android:drawablePadding="@dimen/geek_space_3"
+    android:paddingVertical="@dimen/geek_space_2"
+    android:textColor="@color/geek_accent"
+    android:textSize="@dimen/geek_text_body"
+    android:textStyle="bold"
+    app:drawableRightCompat="@drawable/ic_up_down"
+    app:tint="@color/geek_accent" />
