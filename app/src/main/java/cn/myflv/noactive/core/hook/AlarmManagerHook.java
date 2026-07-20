@@ -8,7 +8,7 @@ import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.AlarmMangerService;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 public class AlarmManagerHook extends MethodHook {
     private final MemData memData;
@@ -37,12 +37,13 @@ public class AlarmManagerHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void afterMethod(MethodHookParam param) throws Throwable {
-                AlarmMangerService alarmMangerService = new AlarmMangerService(param.thisObject);
+            protected Object afterMethod(XposedInterface.Chain chain, Object result) throws Throwable {
+                AlarmMangerService alarmMangerService = new AlarmMangerService(chain.getThisObject());
                 memData.setAlarmMangerService(alarmMangerService);
+                return result;
             }
         };
     }
