@@ -106,7 +106,17 @@ public class DeviceIdleController {
 
     public void removeWhiteList(String pkgName) {
         Log.d("power white list remove " + pkgName);
-        ReflectionUtils.callMethod(instance, MethodConstants.removePowerSaveWhitelistAppInternal, pkgName);
+        try {
+            ReflectionUtils.callMethod(instance, MethodConstants.removePowerSaveWhitelistAppInternal, pkgName);
+        } catch (Throwable e) {
+            // 诊断: 上层 catch 会把 InvocationTargetException 包装成 RuntimeException 并丢弃 cause.
+            // 这里直接输出 cause 类名 + message，便于从日志判断根因
+            // (例如 MIUI/HyperOS Cheeck 拦截 / 方法签名变化 / 权限不足).
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            Throwable rootCause = cause.getCause() != null ? cause.getCause() : cause;
+            String causeInfo = rootCause.getClass().getName() + ": " + rootCause.getMessage();
+            Log.w("removeWhiteList " + pkgName + " failed [" + e.getClass().getSimpleName() + "] root=" + causeInfo);
+        }
     }
 
 }
