@@ -81,12 +81,24 @@ public class PowerKeeperHook extends AbstractAppHook {
         }, "Disable Millet");
     }
 
-    public void runNoThrow(Runnable runnable, String msg) {
+    public void runNoThrow(ThrowableRunnable runnable, String msg) {
         try {
             runnable.run();
             log(msg);
         } catch (Throwable throwable) {
             log(msg + " failed: " + throwable.getMessage());
         }
+    }
+
+    /**
+     * 可抛异常的 Runnable（替代 Runnable，让 lambda 能抛 checked exception）.
+     * <p>
+     * lambda 内部调用 {@link Class#forName} / {@link Class#getDeclaredMethod} 等
+     * 抛出 checked exception 的方法时，标准 {@link Runnable} 无法编译通过。
+     * 本接口声明 {@code throws Throwable}，配合 {@link #runNoThrow} 的 try-catch 使用。
+     */
+    @FunctionalInterface
+    public interface ThrowableRunnable {
+        void run() throws Throwable;
     }
 }
