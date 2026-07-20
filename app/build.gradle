@@ -50,6 +50,13 @@ android {
         jvmTarget = JavaVersion.VERSION_11.majorVersion
     }
 
+    // API 102: META-INF/xposed/* 资源合并配置
+    packagingOptions {
+        resources {
+            merges += "META-INF/xposed/*"
+        }
+    }
+
     android.applicationVariants.all {
         variant ->
             variant.outputs.all {
@@ -60,8 +67,9 @@ android {
 }
 
 dependencies {
-    compileOnly 'de.robv.android.xposed:api:82'
-    compileOnly 'de.robv.android.xposed:api:82:sources'
+    // API 102 升级: de.robv.android.xposed:api:82 → io.github.libxposed:api:102.0.0
+    // LSPosed 2.0.3: targetApiVersion=102 时禁止调用 Legacy API
+    compileOnly 'io.github.libxposed:api:102.0.0'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation project(':blockmiui')

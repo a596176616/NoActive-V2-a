@@ -11,8 +11,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import cn.myflv.noactive.core.HandleHook;
 import cn.myflv.noactive.utils.VersionUtil;
-import de.robv.android.xposed.XposedBridge;
 
 public class Log {
     public final static String TAG = "NoActive";
@@ -76,7 +76,10 @@ public class Log {
     }
 
     public static void xposedLog(String msg) {
-        XposedBridge.log(msg);
+        HandleHook instance = HandleHook.getInstance();
+        if (instance != null) {
+            instance.log(android.util.Log.INFO, TAG, msg);
+        }
     }
 
     public static void fileLog(String msg) {
