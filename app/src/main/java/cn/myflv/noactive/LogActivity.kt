@@ -1,5 +1,6 @@
 package cn.myflv.noactive
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.topjohnwu.superuser.Shell
@@ -27,6 +30,15 @@ class LogActivity : AppCompatActivity() {
 
     private lateinit var logTextView: TextView
     private val handler = Handler(Looper.getMainLooper())
+
+    /**
+     * SAF 目录选择器：用户选好目录后回调得到 URI.
+     * 必须在 Activity 进入 STARTED 之前注册，这里通过成员初始化时机保证.
+     */
+    private val exportLauncher: ActivityResultLauncher<Uri?> =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+            onExportDirSelected(uri)
+        }
 
     /** 当前展示的日志文件名：current 或 last */
     private var currentFile = "current.log"
@@ -55,6 +67,8 @@ class LogActivity : AppCompatActivity() {
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         menu.add(0, MENU_CLEAR, 0, getString(R.string.log_clear))
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_EXPORT, 0, getString(R.string.log_export))
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         return true
     }
 
@@ -75,6 +89,10 @@ class LogActivity : AppCompatActivity() {
             }
             MENU_CLEAR -> {
                 clearLog()
+                return true
+            }
+            MENU_EXPORT -> {
+                exportLauncher.launch(null)
                 return true
             }
         }
@@ -159,9 +177,23 @@ class LogActivity : AppCompatActivity() {
         }.start()
     }
 
+    /**
+     * SAF 选目录回调（占位）.
+     *
+     * 当前仅 Toast 显示选中目录的 URI，下一步会替换为合并 current.log + last.log 后写入.
+     * 用户取消选择时 uri == null，静默忽略.
+     */
+    private fun onExportDirSelected(uri: Uri?) {
+        if (uri == null) {
+            return
+        }
+        Toast.makeText(this, "Selected: $uri", Toast.LENGTH_LONG).show()
+    }
+
     companion object {
         private const val MENU_REFRESH = 1
         private const val MENU_TOGGLE = 2
         private const val MENU_CLEAR = 3
+        private const val MENU_EXPORT = 4
     }
 }
