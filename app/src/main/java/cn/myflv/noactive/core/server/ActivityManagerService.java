@@ -7,10 +7,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.FieldConstants;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.entity.AppInfo;
@@ -41,28 +37,42 @@ public class ActivityManagerService {
             return true;
         }
         int uid = applicationInfo.uid;
-        Class<?> clazz = activityManagerService.getClass();
-        while (clazz != null && !clazz.getName().equals(Object.class.getName()) && !clazz.getName().equals(ClassConstants.ActivityManagerService)) {
-            clazz = clazz.getSuperclass();
-        }
-        if (clazz == null || !clazz.getName().equals(ClassConstants.ActivityManagerService)) {
-            Log.e("super activityManagerService is not found");
-            return true;
-        }
+        // Bug 8d 真因：Android 16 (SDK 36) + HyperOS 上反射调用 private
+        // ActivityManagerService.isAppForeground(int) 会被拦截：
+        //   - setAccessible(true) 不抛异常但 invoke 仍抛
+        //     IllegalAccessException("cannot access private method...")
+        //   - 推测由 MIUI android.hardware.Cheeck 加固机制拦截
+        //     (与 DeviceIdleController.removeWhiteList 失败同源)
+        // 修复：改为直接走 mActiveUids 路径，等价于 AOSP isAppForeground(int) 实现：
+        //   private boolean isAppForeground(int uid) {
+        //     UidRecord uidRec = mProcessList.mActiveUids.get(uid);
+        //     if (uidRec == null || uidRec.idle) return false;
+        //     return uidRec.getCurProcState() <= PROCESS_STATE_IMPORTANT_FOREGROUND;
+        //   }
+        // 这条路径在 isTopApp 中已验证可用（同样用 mActiveUids + isIdle + getCurProcState）。
         try {
-            // API 102: XposedHelpers.findMethodBestMatch → ReflectionUtils.findMethodBestMatch
-            // Bug 8d fix: SDK 36 上 isAppForeground(int) 是 private 方法，跨类 invoke 会抛
-            // IllegalAccessException: cannot access private method ...
-            // 必须先 setAccessible(true) 解除访问限制，再调用 invoke().
-            Method method = ReflectionUtils.findMethodBestMatch(clazz, MethodConstants.isAppForeground, uid);
-            method.setAccessible(true);
-            return (boolean) method.invoke(activityManagerService, uid);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            // Bug 8d 诊断: 之前只输出固定字符串，看不到根因。
-            // 输出异常类型 + message + cause，便于从下次日志定位真实失败原因。
-            String cause = e.getCause() == null ? e.getMessage()
-                    : e.getCause().getClass().getName() + ": " + e.getCause().getMessage();
-            Log.e("call isAppForeground method error [" + e.getClass().getSimpleName() + "] " + cause);
+            synchronized (getLock()) {
+                Object mProcessList = ReflectionUtils.getObjectField(activityManagerService, FieldConstants.mProcessList);
+                Object mActiveUids = ReflectionUtils.getObjectField(mProcessList, FieldConstants.mActiveUids);
+                Object uidRec = ReflectionUtils.callMethod(mActiveUids, MethodConstants.get, uid);
+                if (uidRec == null) {
+                    return false;
+                }
+                boolean idle;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    idle = (boolean) ReflectionUtils.callMethod(uidRec, MethodConstants.isIdle);
+                } else {
+                    idle = ReflectionUtils.getBooleanField(uidRec, FieldConstants.idle);
+                }
+                if (idle) {
+                    return false;
+                }
+                int curProcState = (int) ReflectionUtils.callMethod(uidRec, MethodConstants.getCurProcState);
+                int PROCESS_STATE_IMPORTANT_FOREGROUND = ReflectionUtils.getStaticIntField(ActivityManager.class, FieldConstants.PROCESS_STATE_IMPORTANT_FOREGROUND);
+                return curProcState <= PROCESS_STATE_IMPORTANT_FOREGROUND;
+            }
+        } catch (Throwable throwable) {
+            Log.e("isForegroundApp fallback failed: " + throwable.getMessage());
         }
         return true;
     }
