@@ -221,11 +221,17 @@ class LogActivity : AppCompatActivity() {
                 val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
                 val fileName = "NoActive_log_$timestamp.log"
 
+                // Bug fix: OpenDocumentTree 返回的是 tree URI, createDocument 需要的是 document URI.
+                // 直接传 tree URI 会抛 IllegalArgumentException: Invalid URI.
+                // 必须用 buildDocumentUriUsingTree 转换为根 document URI 再创建子文档.
+                val treeDocUri = DocumentsContract.buildDocumentUriUsingTree(
+                    uri, DocumentsContract.getTreeDocumentId(uri)
+                )
                 val fileUri = DocumentsContract.createDocument(
-                    contentResolver, uri, "text/plain", fileName
+                    contentResolver, treeDocUri, "text/plain", fileName
                 ) ?: throw IOException("createDocument returned null")
 
-                contentResolver.openOutputStream(fileUri, "wt")?.use { os ->
+                contentResolver.openOutputStream(fileUri, "w")?.use { os ->
                     os.write(sb.toString().toByteArray())
                 } ?: throw IOException("openOutputStream returned null")
 
