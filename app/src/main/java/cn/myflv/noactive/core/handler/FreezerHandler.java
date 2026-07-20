@@ -302,11 +302,17 @@ public class FreezerHandler {
                     return;
                 }
                 // 是否唤醒锁
-                memData.getPowerManagerService().releaseWakeLocks(appInfo, applicationInfo.uid);
+                if (memData.getPowerManagerService() != null) {
+                    memData.getPowerManagerService().releaseWakeLocks(appInfo, applicationInfo.uid);
+                }
                 // memData.getAlarmMangerService().remove(appInfo, applicationInfo.uid);
                 if (!memData.getSocketApps().contains(appInfo.getPackageName())) {
-                    memData.getAppStandbyController().forceIdleState(appInfo, true);
-                    memData.getNetworkManagementService().socketDestroy(appInfo, applicationInfo);
+                    if (memData.getAppStandbyController() != null) {
+                        memData.getAppStandbyController().forceIdleState(appInfo, true);
+                    }
+                    if (memData.getNetworkManagementService() != null) {
+                        memData.getNetworkManagementService().socketDestroy(appInfo, applicationInfo);
+                    }
                 }
             });
             if (Thread.currentThread().isInterrupted()) {
