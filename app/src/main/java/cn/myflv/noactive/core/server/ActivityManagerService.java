@@ -53,7 +53,11 @@ public class ActivityManagerService {
             // 保留直接 invoke() 以维持原 catch (IllegalAccessException | InvocationTargetException) 语义
             return (boolean) ReflectionUtils.findMethodBestMatch(clazz, MethodConstants.isAppForeground, uid).invoke(activityManagerService, uid);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            Log.e("call isAppForeground method error");
+            // Bug 8d 诊断: 之前只输出固定字符串，看不到根因。
+            // 输出异常类型 + message + cause，便于从下次日志定位真实失败原因。
+            String cause = e.getCause() == null ? e.getMessage()
+                    : e.getCause().getClass().getName() + ": " + e.getCause().getMessage();
+            Log.e("call isAppForeground method error [" + e.getClass().getSimpleName() + "] " + cause);
         }
         return true;
     }
