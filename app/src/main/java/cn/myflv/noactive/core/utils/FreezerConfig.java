@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -17,7 +18,6 @@ import java.util.Set;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
-import de.robv.android.xposed.XposedHelpers;
 
 public class FreezerConfig {
 
@@ -98,9 +98,12 @@ public class FreezerConfig {
 
     public static boolean isAndroidApi(ClassLoader classLoader) {
         // v0.9.10 port: SDK 34+ 上 isFreezerSupported 可能不存在或抛异常，失败时默认 V2 (cgroup v2 freezer)
+        // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
         try {
-            Class<?> CachedAppOptimizer = XposedHelpers.findClass(ClassConstants.CachedAppOptimizer, classLoader);
-            return (boolean) XposedHelpers.callStaticMethod(CachedAppOptimizer, MethodConstants.isFreezerSupported);
+            Class<?> CachedAppOptimizer = Class.forName(ClassConstants.CachedAppOptimizer, false, classLoader);
+            Method isFreezerSupported = CachedAppOptimizer.getDeclaredMethod(MethodConstants.isFreezerSupported);
+            isFreezerSupported.setAccessible(true);
+            return (boolean) isFreezerSupported.invoke(null);
         } catch (Throwable e) {
             Log.i("isFreezerSupported not available on SDK=" + Build.VERSION.SDK_INT + ", default to V2 (cgroup v2 freezer)");
             return true;
@@ -108,8 +111,10 @@ public class FreezerConfig {
     }
 
     public static boolean isXiaoMiV1(ClassLoader classLoader) {
+        // API 102: XposedHelpers.findClassIfExists → Class.forName + try-catch
         try {
-            return XposedHelpers.findClassIfExists(ClassConstants.GreezeManagerService, classLoader) != null;
+            Class.forName(ClassConstants.GreezeManagerService, false, classLoader);
+            return true;
         } catch (Throwable ignored) {
         }
         return false;
