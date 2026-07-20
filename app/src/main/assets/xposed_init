@@ -1,1 +1,5 @@
-cn.myflv.noactive.core.HandleHook
+# Deprecated since API 102 refactor (2026-07-20)
+# LSPosed API 102 不再读取此文件
+# 模块入口已迁移至 META-INF/xposed/java_init.list
+# 此文件保留为说明，防止被 LSPosed 误读为有效入口
+# 原始内容已备份至 docs/legacy/xposed_init
