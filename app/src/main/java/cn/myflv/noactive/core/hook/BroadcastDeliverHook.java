@@ -166,64 +166,71 @@ public class BroadcastDeliverHook extends MethodHook {
 
     @Override
     public XposedInterface.Hooker getTargetHook() {
-        return new AbstractMethodHook() {
+        // F3A-029 fix: 不再继承 AbstractMethodHook。
+        // AbstractMethodHook.intercept() 中 chain.proceed() 抛异常时不会调用 afterMethod，
+        // 导致 receiverList.app 永久为 null → 系统认为该 receiverList 的进程已死 → 永久停止分发广播。
+        // 改为直接实现 XposedInterface.Hooker，用 try-finally 保证 restore 一定被调用。
+        return new XposedInterface.Hooker() {
             @Override
-            protected void beforeMethod(XposedInterface.Chain chain) throws Throwable {
+            public Object intercept(XposedInterface.Chain chain) throws Throwable {
                 // 清理上次的 extra（防止 chain.proceed() 抛异常后 extraMap 残留）
                 extraMap.get().clear();
 
+                // before 阶段：原 beforeMethod 逻辑
+                Object savedApp = null;
+                Object savedReceiverList = null;
+                boolean cleared = false;
+
                 Object filterObj = extractBroadcastFilter(chain);
-                if (filterObj == null) {
-                    return;
-                }
-                BroadcastFilter broadcastFilter = new BroadcastFilter(filterObj);
-                ReceiverList receiverList = broadcastFilter.getReceiverList();
-                // 如果广播为空就不处理
-                if (receiverList == null) {
-                    return;
-                }
-                ProcessRecord processRecord = receiverList.getProcessRecord();
-                // 如果进程或者应用信息为空就不处理
-                if (processRecord == null) {
-                    return;
-                }
-
-                // 不是目标进程就不处理
-                if (!memData.isTargetProcess(processRecord.getUserId(), processRecord)) {
-                    return;
-                }
-
-                AppInfo appInfo = AppInfo.getInstance(processRecord.getUserId(), processRecord.getPackageName());
-
-                // 不是冻结APP就不处理
-                if (!memData.getFreezerAppSet().contains(appInfo.getKey())) {
-                    // 意味着广播执行
-                    broadcastStart(chain, appInfo);
-                    return;
-                }
-
-                // v0.9.10 port fix (MAJOR-10/12): R4 窗口期守护
-                // 启动后 refreezeAll 完成前，freezerAppSet 已加载 background.conf 的 key
-                // 但实际进程尚未物理冻结，此时不应清空广播（避免开机后首批广播丢失）
-                if (!FreezerHandler.isR4Completed()) {
-                    broadcastStart(chain, appInfo);
-                    return;
+                if (filterObj != null) {
+                    BroadcastFilter broadcastFilter = new BroadcastFilter(filterObj);
+                    ReceiverList receiverList = broadcastFilter.getReceiverList();
+                    if (receiverList != null) {
+                        ProcessRecord processRecord = receiverList.getProcessRecord();
+                        if (processRecord != null && memData.isTargetProcess(processRecord.getUserId(), processRecord)) {
+                            AppInfo appInfo = AppInfo.getInstance(processRecord.getUserId(), processRecord.getPackageName());
+                            if (!memData.getFreezerAppSet().contains(appInfo.getKey())) {
+                                // 不是冻结 APP，广播正常执行
+                                broadcastStart(chain, appInfo);
+                            } else if (!FreezerHandler.isR4Completed()) {
+                                // v0.9.10 port fix (MAJOR-10/12): R4 窗口期守护
+                                // 启动后 refreezeAll 完成前，freezerAppSet 已加载 background.conf 的 key
+                                // 但实际进程尚未物理冻结，此时不应清空广播（避免开机后首批广播丢失）
+                                broadcastStart(chain, appInfo);
+                            } else {
+                                // 暂存原 app（替代原 setObjectExtra 机制，本地变量更安全）
+                                savedApp = processRecord.getProcessRecord();
+                                savedReceiverList = receiverList.getReceiverList();
+                                Log.d(processRecord.getProcessNameWithUser() + " clear broadcast");
+                                // 清空广播
+                                receiverList.clear();
+                                cleared = true;
+                            }
+                        }
+                    }
                 }
 
-                // 暂存
-                Object app = processRecord.getProcessRecord();
-                setObjectExtra(FieldConstants.app, app);
-                Log.d(processRecord.getProcessNameWithUser() + " clear broadcast");
-                // 清楚广播
-                receiverList.clear();
-            }
+                // 调用原方法，try-finally 保证 restore 一定被调用
+                Object result;
+                try {
+                    result = chain.proceed();
+                } finally {
+                    // 恢复被修改的参数（即使 chain.proceed 抛异常也要 restore，避免系统广播永久丢失）
+                    if (cleared && savedReceiverList != null) {
+                        try {
+                            ReflectionUtils.setObjectField(savedReceiverList, FieldConstants.app, savedApp);
+                        } catch (Throwable t) {
+                            Log.e("restore receiverList.app failed", t);
+                        }
+                    }
+                    // 广播结束
+                    try {
+                        broadcastFinish(chain);
+                    } catch (Throwable t) {
+                        Log.e("broadcastFinish failed", t);
+                    }
+                }
 
-            @Override
-            protected Object afterMethod(XposedInterface.Chain chain, Object result) throws Throwable {
-                // 恢复被修改的参数
-                restore(chain);
-                // 广播结束
-                broadcastFinish(chain);
                 return result;
             }
         };
