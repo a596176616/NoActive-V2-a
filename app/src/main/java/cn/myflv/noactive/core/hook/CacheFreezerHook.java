@@ -5,7 +5,7 @@ import android.os.Build;
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.hook.base.MethodHook;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 /**
  * 禁用暂停执行已缓存Hook.
@@ -33,7 +33,7 @@ public class CacheFreezerHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         // 返回不使用暂停执行已缓存
         return constantResult(false);
     }
