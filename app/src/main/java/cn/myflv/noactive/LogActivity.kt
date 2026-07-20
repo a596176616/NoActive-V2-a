@@ -66,7 +66,7 @@ class LogActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, MENU_REFRESH, 0, getString(R.string.log_refresh))
-            .setIcon(R.drawable.ic_setting)
+            .setIcon(R.drawable.ic_refresh_geek)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         menu.add(0, MENU_TOGGLE, 0, getString(R.string.log_toggle))
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
