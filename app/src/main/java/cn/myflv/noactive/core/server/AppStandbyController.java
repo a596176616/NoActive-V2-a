@@ -3,7 +3,7 @@ package cn.myflv.noactive.core.server;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.entity.AppInfo;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -19,7 +19,7 @@ public class AppStandbyController {
         int userId = appInfo.getUserId();
         String packageName = appInfo.getPackageName();
         try {
-            XposedHelpers.callMethod(appStandbyController, MethodConstants.forceIdleState, packageName, userId, idle);
+            ReflectionUtils.callMethod(appStandbyController, MethodConstants.forceIdleState, packageName, userId, idle);
             Log.d(appInfo.getKey() + " standby " + (idle ? "rare" : "active"));
         } catch (Throwable throwable) {
             Log.e("forceIdleState", throwable);
