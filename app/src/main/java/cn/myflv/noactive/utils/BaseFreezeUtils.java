@@ -14,10 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
-import de.robv.android.xposed.XposedHelpers;
 
 
 public class BaseFreezeUtils {
@@ -357,8 +357,12 @@ public class BaseFreezeUtils {
             return false;
         }
         try {
-            Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, sClassLoader);
-            XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
+            // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
+            // 注意：局部变量重命名为 ProcessClass 避免遮蔽已 import 的 android.os.Process
+            Class<?> ProcessClass = Class.forName(ClassConstants.Process, false, sClassLoader);
+            Method setProcessFrozen = ProcessClass.getDeclaredMethod(MethodConstants.setProcessFrozen, int.class, int.class, boolean.class);
+            setProcessFrozen.setAccessible(true);
+            setProcessFrozen.invoke(null, pid, uid, frozen);
             Log.i(TAG, "Freezer V2 fallback to API succeeded: pid=" + pid + " uid=" + uid + " frozen=" + frozen);
             return true;
         } catch (Throwable e) {
