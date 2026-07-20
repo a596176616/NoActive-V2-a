@@ -2,6 +2,7 @@ package cn.myflv.noactive.utils;
 
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -27,6 +28,7 @@ import java.lang.reflect.Method;
  *   <li>{@link #callStaticMethod(Class, String, Object...)}</li>
  *   <li>{@link #findMethodBestMatch(Class, String, Object...)}</li>
  *   <li>{@link #findClass(String, ClassLoader)}</li>
+ *   <li>{@link #newInstance(Class, Object...)}</li>
  * </ul>
  * <p>
  * Behavior parity notes:
@@ -176,6 +178,48 @@ public final class ReflectionUtils {
             return Class.forName(className, false, classLoader);
         } catch (Throwable e) {
             Log.e(TAG, "findClass " + className + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Create a new instance of the given class by invoking the constructor
+     * whose parameter types match the supplied arguments (best-effort
+     * assignability match, mirroring {@code XposedHelpers.newInstance}).
+     */
+    public static Object newInstance(Class<?> clazz, Object... args) {
+        try {
+            Constructor<?>[] ctors = clazz.getDeclaredConstructors();
+            Constructor<?> best = null;
+            for (Constructor<?> c : ctors) {
+                Class<?>[] params = c.getParameterTypes();
+                if (params.length != args.length) {
+                    continue;
+                }
+                boolean ok = true;
+                for (int i = 0; i < params.length; i++) {
+                    if (args[i] == null) {
+                        if (params[i].isPrimitive()) {
+                            ok = false;
+                            break;
+                        }
+                    } else if (!isAssignable(params[i], args[i].getClass())) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) {
+                    best = c;
+                    break;
+                }
+            }
+            if (best == null) {
+                throw new NoSuchMethodException(clazz.getName() + ".<init> with " + args.length + " args");
+            }
+            best.setAccessible(true);
+            return best.newInstance(args);
+        } catch (Throwable e) {
+            Log.e(TAG, "newInstance " + clazz.getName() + " failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
