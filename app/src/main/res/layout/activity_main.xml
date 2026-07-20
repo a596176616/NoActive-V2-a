@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.NoActive"
@@ -29,9 +30,14 @@
 
         <include layout="@layout/activity_filter" />
 
-        <include layout="@layout/activity_app_list" />
-
-
     </com.google.android.material.appbar.AppBarLayout>
+
+    <include
+        android:id="@+id/app_list_container"
+        layout="@layout/activity_app_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
