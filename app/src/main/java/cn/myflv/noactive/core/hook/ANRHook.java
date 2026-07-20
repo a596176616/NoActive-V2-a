@@ -2,19 +2,17 @@ package cn.myflv.noactive.core.hook;
 
 import android.os.Build;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.lang.reflect.Method;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
+import cn.myflv.noactive.core.HandleHook;
 import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.hook.base.AbstractReplaceHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.ProcessRecord;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.libxposed.api.XposedInterface;
 
 /**
  * ANR相关Hook.
@@ -25,6 +23,11 @@ import de.robv.android.xposed.XposedHelpers;
  *   <li>SDK 34-35: 8 args + TimeoutRecord</li>
  *   <li>SDK 30-33: 7 args + String (原有签名)</li>
  * </ul>
+ * <p>
+ * API 102: 用 Java 反射 + {@code HandleHook.getInstance().hook(method).intercept(hooker)}
+ * 替代 {@code XposedHelpers.findAndHookMethod}；
+ * 用 {@link AbstractReplaceHook#DO_NOTHING} 替代 {@code XC_MethodReplacement.DO_NOTHING}；
+ * 用 {@code chain.proceed()} 替代 {@code invokeOriginalMethod(param)}.
  */
 public class ANRHook extends MethodHook {
 
@@ -90,7 +93,7 @@ public class ANRHook extends MethodHook {
      * <p>
      * SDK > Q 时先尝试 SDK 36 签名（带 ExecutorService + TimeoutRecord），
      * 失败再尝试 SDK 34-35 签名（带 TimeoutRecord），最后回退到 SDK 30-33 签名（带 String）。
-     * SDK <= Q 仍走基类默认逻辑（DO_NOTHING 模式）。
+     * SDK <= Q 仍走 DO_NOTHING 模式。
      */
     @Override
     public void hook() {
@@ -100,12 +103,14 @@ public class ANRHook extends MethodHook {
         }
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            // SDK <= Q: 走基类默认 hook 逻辑（DO_NOTHING 模式）
+            // SDK <= Q: 走 DO_NOTHING 模式
             mode = MODE_DO_NOTHING;
             try {
-                ArrayList<Object> param = new ArrayList<>(Arrays.asList(getTargetParam()));
-                param.add(XC_MethodReplacement.DO_NOTHING);
-                XposedHelpers.findAndHookMethod(getTargetClass(), classLoader, getTargetMethod(), param.toArray());
+                Class<?> clazz = Class.forName(getTargetClass(), false, classLoader);
+                Class<?>[] paramTypes = resolveParamTypes(getTargetParam());
+                Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+                method.setAccessible(true);
+                HandleHook.getInstance().hook(method).intercept(AbstractReplaceHook.DO_NOTHING);
                 onSuccess();
             } catch (Throwable throwable) {
                 onError(throwable);
@@ -113,25 +118,28 @@ public class ANRHook extends MethodHook {
             return;
         }
 
-        // SDK > Q: 多候选签名依次尝试，最终回退到基类默认逻辑
+        // SDK > Q: 多候选签名依次尝试，最终回退到基类默认签名
         mode = MODE_REPLACE;
-        XC_MethodHook targetHook = getTargetHook();
+        XposedInterface.Hooker targetHook = getTargetHook();
 
         // 候选 1: SDK 36 - 9 args + ExecutorService + TimeoutRecord
         if (Build.VERSION.SDK_INT >= 34) {
             try {
-                ArrayList<Object> param = new ArrayList<>();
-                param.add(ClassConstants.ProcessRecord);
-                param.add(String.class);
-                param.add(ClassConstants.ApplicationInfo);
-                param.add(String.class);
-                param.add(ClassConstants.WindowProcessController);
-                param.add(boolean.class);
-                param.add(ClassConstants.ExecutorService);
-                param.add(ClassConstants.TimeoutRecord);
-                param.add(boolean.class);
-                param.add(targetHook);
-                XposedHelpers.findAndHookMethod(ClassConstants.AnrHelper, classLoader, getTargetMethod(), param.toArray());
+                Class<?>[] paramTypes = new Class<?>[]{
+                        Class.forName(ClassConstants.ProcessRecord, false, classLoader),
+                        String.class,
+                        Class.forName(ClassConstants.ApplicationInfo, false, classLoader),
+                        String.class,
+                        Class.forName(ClassConstants.WindowProcessController, false, classLoader),
+                        boolean.class,
+                        Class.forName(ClassConstants.ExecutorService, false, classLoader),
+                        Class.forName(ClassConstants.TimeoutRecord, false, classLoader),
+                        boolean.class
+                };
+                Class<?> clazz = Class.forName(ClassConstants.AnrHelper, false, classLoader);
+                Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+                method.setAccessible(true);
+                HandleHook.getInstance().hook(method).intercept(targetHook);
                 Log.i("Auto keep ANR (9 args + ExecutorService + TimeoutRecord, SDK 36)");
                 onSuccess();
                 return;
@@ -143,17 +151,20 @@ public class ANRHook extends MethodHook {
         // 候选 2: SDK 34-35 - 8 args + TimeoutRecord
         if (Build.VERSION.SDK_INT >= 34) {
             try {
-                ArrayList<Object> param = new ArrayList<>();
-                param.add(ClassConstants.ProcessRecord);
-                param.add(String.class);
-                param.add(ClassConstants.ApplicationInfo);
-                param.add(String.class);
-                param.add(ClassConstants.WindowProcessController);
-                param.add(boolean.class);
-                param.add(ClassConstants.TimeoutRecord);
-                param.add(boolean.class);
-                param.add(targetHook);
-                XposedHelpers.findAndHookMethod(ClassConstants.AnrHelper, classLoader, getTargetMethod(), param.toArray());
+                Class<?>[] paramTypes = new Class<?>[]{
+                        Class.forName(ClassConstants.ProcessRecord, false, classLoader),
+                        String.class,
+                        Class.forName(ClassConstants.ApplicationInfo, false, classLoader),
+                        String.class,
+                        Class.forName(ClassConstants.WindowProcessController, false, classLoader),
+                        boolean.class,
+                        Class.forName(ClassConstants.TimeoutRecord, false, classLoader),
+                        boolean.class
+                };
+                Class<?> clazz = Class.forName(ClassConstants.AnrHelper, false, classLoader);
+                Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+                method.setAccessible(true);
+                HandleHook.getInstance().hook(method).intercept(targetHook);
                 Log.i("Auto keep ANR (8 args + TimeoutRecord, SDK 34-35 fallback)");
                 onSuccess();
                 return;
@@ -164,9 +175,11 @@ public class ANRHook extends MethodHook {
 
         // 候选 3: SDK 30-33 - 7 args + String（基类默认签名）
         try {
-            ArrayList<Object> param = new ArrayList<>(Arrays.asList(getTargetParam()));
-            param.add(targetHook);
-            XposedHelpers.findAndHookMethod(ClassConstants.AnrHelper, classLoader, getTargetMethod(), param.toArray());
+            Class<?>[] paramTypes = resolveParamTypes(getTargetParam());
+            Class<?> clazz = Class.forName(ClassConstants.AnrHelper, false, classLoader);
+            Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+            method.setAccessible(true);
+            HandleHook.getInstance().hook(method).intercept(targetHook);
             Log.i("Auto keep ANR (7 args + String, SDK 30-33 fallback)");
             onSuccess();
         } catch (Throwable throwable) {
@@ -174,23 +187,39 @@ public class ANRHook extends MethodHook {
         }
     }
 
+    /**
+     * 把 getTargetParam() 返回的 Object[]（String 类名或 Class<?>）解析为 Class<?>[].
+     */
+    private Class<?>[] resolveParamTypes(Object[] paramTypesObj) throws ClassNotFoundException {
+        Class<?>[] paramTypes = new Class<?>[paramTypesObj.length];
+        for (int i = 0; i < paramTypesObj.length; i++) {
+            Object paramType = paramTypesObj[i];
+            if (paramType instanceof Class) {
+                paramTypes[i] = (Class<?>) paramType;
+            } else if (paramType instanceof String) {
+                paramTypes[i] = Class.forName((String) paramType, false, classLoader);
+            } else {
+                throw new IllegalArgumentException("Unsupported param type: " + paramType);
+            }
+        }
+        return paramTypes;
+    }
+
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             return new AbstractReplaceHook() {
                 @Override
-                protected Object replaceMethod(MethodHookParam param) throws Throwable {
-                    // 获取方法参数
-                    Object[] args = param.args;
+                protected Object replaceMethod(XposedInterface.Chain chain) throws Throwable {
                     // ANR进程为空就不处理
-                    if (args[0] == null) return null;
+                    if (chain.getArg(0) == null) return null;
                     // ANR进程
-                    ProcessRecord processRecord = new ProcessRecord(args[0]);
+                    ProcessRecord processRecord = new ProcessRecord(chain.getArg(0));
                     // 进程对应包名
                     String packageName = processRecord.getPackageName();
                     // 不是目标APP就调用原方法
                     if (!memData.isTargetApp(packageName)) {
-                        return invokeOriginalMethod(param);
+                        return chain.proceed();
                     }
                     String processNameWithUser = processRecord.getProcessNameWithUser();
                     String packageNameWithUser = processRecord.getPackageNameWithUser();
@@ -200,7 +229,7 @@ public class ANRHook extends MethodHook {
                 }
             };
         } else {
-            return XC_MethodReplacement.DO_NOTHING;
+            return AbstractReplaceHook.DO_NOTHING;
         }
     }
 
