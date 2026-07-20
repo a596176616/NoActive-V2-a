@@ -18,10 +18,15 @@ import java.lang.reflect.Method;
  *   <li>{@link #getObjectField(Object, String)}</li>
  *   <li>{@link #getStaticObjectField(Class, String)}</li>
  *   <li>{@link #getBooleanField(Object, String)}</li>
+ *   <li>{@link #getIntField(Object, String)}</li>
  *   <li>{@link #getStaticIntField(Class, String)}</li>
+ *   <li>{@link #setBooleanField(Object, String, boolean)}</li>
+ *   <li>{@link #setIntField(Object, String, int)}</li>
+ *   <li>{@link #setObjectField(Object, String, Object)}</li>
  *   <li>{@link #callMethod(Object, String, Object...)}</li>
  *   <li>{@link #callStaticMethod(Class, String, Object...)}</li>
  *   <li>{@link #findMethodBestMatch(Class, String, Object...)}</li>
+ *   <li>{@link #findClass(String, ClassLoader)}</li>
  * </ul>
  * <p>
  * Behavior parity notes:
@@ -78,6 +83,17 @@ public final class ReflectionUtils {
                 + " is not boolean: " + (v == null ? "null" : v.getClass().getName()));
     }
 
+    public static int getIntField(Object obj, String fieldName) {
+        try {
+            Field f = findField(obj.getClass(), fieldName);
+            f.setAccessible(true);
+            return f.getInt(obj);
+        } catch (Throwable e) {
+            Log.e(TAG, "getIntField " + fieldName + " on " + obj.getClass().getName() + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public static int getStaticIntField(Class<?> clazz, String fieldName) {
         try {
             Field f = findField(clazz, fieldName);
@@ -85,6 +101,39 @@ public final class ReflectionUtils {
             return f.getInt(null);
         } catch (Throwable e) {
             Log.e(TAG, "getStaticIntField " + fieldName + " on " + clazz.getName() + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setBooleanField(Object obj, String fieldName, boolean value) {
+        try {
+            Field f = findField(obj.getClass(), fieldName);
+            f.setAccessible(true);
+            f.setBoolean(obj, value);
+        } catch (Throwable e) {
+            Log.e(TAG, "setBooleanField " + fieldName + " on " + obj.getClass().getName() + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setIntField(Object obj, String fieldName, int value) {
+        try {
+            Field f = findField(obj.getClass(), fieldName);
+            f.setAccessible(true);
+            f.setInt(obj, value);
+        } catch (Throwable e) {
+            Log.e(TAG, "setIntField " + fieldName + " on " + obj.getClass().getName() + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setObjectField(Object obj, String fieldName, Object value) {
+        try {
+            Field f = findField(obj.getClass(), fieldName);
+            f.setAccessible(true);
+            f.set(obj, value);
+        } catch (Throwable e) {
+            Log.e(TAG, "setObjectField " + fieldName + " on " + obj.getClass().getName() + " failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -109,6 +158,24 @@ public final class ReflectionUtils {
             return m.invoke(null, args);
         } catch (Throwable e) {
             Log.e(TAG, "callStaticMethod " + methodName + " on " + clazz.getName() + " failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // ===== Class loading =====
+
+    /**
+     * Load a class by name via {@link Class#forName(String, boolean, ClassLoader)}.
+     * <p>
+     * Drop-in replacement for {@code XposedHelpers.findClass}. The class is
+     * not initialized (initialize=false) to match XposedHelpers semantics
+     * and avoid triggering static initializers unexpectedly.
+     */
+    public static Class<?> findClass(String className, ClassLoader classLoader) {
+        try {
+            return Class.forName(className, false, classLoader);
+        } catch (Throwable e) {
+            Log.e(TAG, "findClass " + className + " failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
