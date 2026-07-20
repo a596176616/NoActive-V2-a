@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 设置页主背景 (强制深色 surface) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/foreground" />
+    <solid android:color="@color/geek_bg_surface" />
 </shape>

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 开关轨道 (选中时薰衣草紫，未选时 elevated) -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
         <shape>
-            <solid android:color="#0c84ff" />
-            <corners android:radius="25dp" />
+            <solid android:color="@color/geek_accent" />
+            <corners android:radius="@dimen/geek_radius_full" />
             <size android:height="15dp" android:width="25dp" />
         </shape>
     </item>
 
     <item android:state_checked="false">
         <shape>
-            <solid android:color="@color/colorTrack" />
-            <corners android:radius="25dp" />
+            <solid android:color="@color/geek_bg_elevated" />
+            <corners android:radius="@dimen/geek_radius_full" />
             <size android:height="15dp" android:width="25dp" />
         </shape>
     </item>

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: blockmiui 夜间模式与默认一致 (强制深色) -->
 <resources>
-    <color name="foreground">#121212</color>
-    <color name="rounded_pop">#333333</color>
-    <color name="menu">#FFFFFF</color>
-    <color name="author_tips">#ACACAC</color>
-    <color name="colorTrack">#333333</color>
-    <color name="whiteClick">#292929</color>
-    <color name="whiteText">#FFFFFF</color>
-    <color name="line">#2D2D2D</color>
-    <color name="colorAccent">#0374A7</color>
-    <color name="RButtonDisable">#343434</color>
-    <color name="LButtonDisable">#222222</color>
+    <color name="foreground">@color/geek_bg_base</color>
+    <color name="rounded_pop">@color/geek_bg_elevated</color>
+    <color name="menu">@color/geek_text_primary</color>
+    <color name="author_tips">@color/geek_text_tertiary</color>
+    <color name="colorTrack">@color/geek_bg_elevated</color>
+    <color name="whiteClick">@color/geek_bg_surface_variant</color>
+    <color name="whiteText">@color/geek_text_primary</color>
+    <color name="line">@color/geek_divider</color>
+    <color name="colorAccent">@color/geek_accent</color>
+    <color name="white">@color/geek_bg_surface</color>
+    <color name="RButtonDisable">@color/geek_bg_surface_variant</color>
+    <color name="LButtonDisable">@color/geek_bg_surface_variant</color>
 
-    <color name="popup_background">#242424</color>
-    <color name="popup_background_click">#454545</color>
-    <color name="popup_select">#1F2F4C</color>
-    <color name="popup_select_click">#404E67</color>
-
-    <color name="spinner">#666666</color>
+    <color name="popup_background">@color/geek_bg_elevated</color>
+    <color name="popup_background_click">@color/geek_bg_surface_variant</color>
+    <color name="popup_select">@color/geek_accent_soft</color>
+    <color name="popup_select_click">@color/geek_accent_soft</color>
+    <color name="popup_select_text">@color/geek_accent</color>
+    <color name="spinner">@color/geek_text_tertiary</color>
 </resources>

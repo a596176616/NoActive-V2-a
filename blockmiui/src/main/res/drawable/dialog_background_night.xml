@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 对话框背景 (夜间一致) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#242424" />
+    <solid android:color="@color/geek_bg_surface" />
     <corners
-            android:topLeftRadius="30dp"
-            android:topRightRadius="30dp" />
+        android:topLeftRadius="@dimen/geek_radius_2xl"
+        android:topRightRadius="@dimen/geek_radius_2xl" />
 </shape>
