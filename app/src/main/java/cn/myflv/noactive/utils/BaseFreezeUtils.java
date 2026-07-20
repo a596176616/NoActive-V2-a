@@ -104,14 +104,19 @@ public class BaseFreezeUtils {
     }
 
     private static boolean writeNode(boolean su, String path, int val) {
+        // F3A-055 fix: PrintWriter 必须在 finally 中 close，避免异常时 FD 泄露
+        PrintWriter writer = null;
         try {
-            PrintWriter writer = getWriter(su, path);
+            writer = getWriter(su, path);
             writer.write(Integer.toString(val));
-            writer.close();
             return true;
         } catch (Exception e) {
             if (val == FREEZE_ACTION) {
                 Log.e(TAG, "Freezer V1 failed: " + e.getMessage());
+            }
+        } finally {
+            if (writer != null) {
+                writer.close();
             }
         }
         return false;
@@ -131,14 +136,15 @@ public class BaseFreezeUtils {
         // 策略2: 扫描 uid_<uid>/pid_*/cgroup.procs 找匹配 pid
         // 策略3: 兜底硬编码（原直接拼路径）
         String path = resolveCgroupFreezePath(su, pid, uid);
+        // F3A-055 fix: PrintWriter 必须在 finally 中 close，避免异常时 FD 泄露
+        PrintWriter writer = null;
         try {
-            PrintWriter writer = getWriter(su, path);
+            writer = getWriter(su, path);
             if (action) {
                 writer.write(Integer.toString(FREEZE_ACTION));
             } else {
                 writer.write(Integer.toString(UNFREEZE_ACTION));
             }
-            writer.close();
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Freezer V2 failed: " + e.getMessage());
@@ -152,6 +158,10 @@ public class BaseFreezeUtils {
             // v0.9.10 反编译代码的 fallback 链：V2 写节点 → API → SIGSTOP，
             // 移植版之前丢了最后一环，本补丁恢复 SIGSTOP 兜底。
             return fallbackToSignal(pid, action);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
         }
     }
 
