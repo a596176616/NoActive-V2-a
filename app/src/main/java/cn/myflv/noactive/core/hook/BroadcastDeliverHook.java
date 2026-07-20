@@ -83,10 +83,15 @@ public class BroadcastDeliverHook extends MethodHook {
     }
 
     /**
-     * v0.9.10 port: 重写 hook() 实现"先 legacy 后 dispatch"双候选签名依次尝试.
+     * v0.9.10 port: 按 SDK 版本选择对应的 Hook 签名.
      * <p>
-     * SDK 34+ 上 BroadcastQueueImpl.dispatchReceivers 替代了 deliverToRegisteredReceiverLocked，
-     * 但部分 OEM 可能仍保留旧方法。先尝试 legacy，失败再尝试 dispatch。
+     * API 102 现代模块下：
+     * <ul>
+     *   <li>SDK &lt; 34: 仅使用 legacy 模式（BroadcastQueue.deliverToRegisteredReceiverLocked 4 args）</li>
+     *   <li>SDK &gt;= 34: 仅使用 dispatch 模式（BroadcastQueueImpl.dispatchReceivers 3 args），
+     *       不回退 legacy——SDK 34+ 上 deliverToRegisteredReceiverLocked 签名已变，
+     *       回退必然导致 extractBroadcastFilter 拿到错误类型对象（Bug 4 根因）</li>
+     * </ul>
      */
     @Override
     public void hook() {
@@ -97,23 +102,8 @@ public class BroadcastDeliverHook extends MethodHook {
 
         XposedInterface.Hooker targetHook = getTargetHook();
 
-        // 1. 先尝试 legacy 模式（BroadcastQueue.deliverToRegisteredReceiverLocked 4 args）
-        try {
-            Class<?> clazz = Class.forName(getTargetClass(), false, classLoader);
-            Class<?>[] paramTypes = resolveParamTypes(getTargetParam());
-            Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
-            method.setAccessible(true);
-            HandleHook.getInstance().hook(method).intercept(targetHook);
-            mode = MODE_LEGACY;
-            onSuccess();
-            return;
-        } catch (Throwable ignored) {
-            // legacy 模式不可用，尝试 dispatch 模式
-        }
-
-        // 2. SDK 34+ 尝试 dispatch 模式（BroadcastQueueImpl.dispatchReceivers 3 args）
+        // SDK 34+：仅尝试 dispatch 模式
         if (Build.VERSION.SDK_INT >= 34) {
-            // 候选类数组，依次尝试
             String[] candidateClasses = {
                 ClassConstants.BroadcastQueueImpl,
                 ClassConstants.BroadcastQueueModernImpl,
@@ -138,10 +128,22 @@ public class BroadcastDeliverHook extends MethodHook {
                     // 此候选类不可用，尝试下一个
                 }
             }
+            onError(new NoSuchMethodError("dispatchReceivers not available on any candidate class (SDK >= 34)"));
+            return;
         }
 
-        // 3. 全部失败
-        onError(new NoSuchMethodError("Neither deliverToRegisteredReceiverLocked nor dispatchReceivers available"));
+        // SDK < 34：仅使用 legacy 模式
+        try {
+            Class<?> clazz = Class.forName(getTargetClass(), false, classLoader);
+            Class<?>[] paramTypes = resolveParamTypes(getTargetParam());
+            Method method = clazz.getDeclaredMethod(getTargetMethod(), paramTypes);
+            method.setAccessible(true);
+            HandleHook.getInstance().hook(method).intercept(targetHook);
+            mode = MODE_LEGACY;
+            onSuccess();
+        } catch (Throwable throwable) {
+            onError(throwable);
+        }
     }
 
     /**
@@ -232,12 +234,20 @@ public class BroadcastDeliverHook extends MethodHook {
      * <p>
      * MODE_LEGACY: arg(1) 直接是 BroadcastFilter.
      * MODE_DISPATCH: arg(1) 是 BroadcastRecord，arg(2) 是 receiverIndex，需用 wrapper 取出 receiver.
+     * <p>
+     * Bug 4 fix: SDK 34+ 上即便回退到 legacy 模式，deliverToRegisteredReceiverLocked
+     * 第 2 个参数可能已不是 BroadcastFilter（OEM/SDK 改签名）。这里对返回对象做严格类型校验，
+     * 防止把 BroadcastRecord 等其他类型误当 BroadcastFilter 处理导致 receiverList 反射失败刷屏。
      */
     private Object extractBroadcastFilter(XposedInterface.Chain chain) {
         if (mode != MODE_DISPATCH) {
             // legacy 模式：args = [BroadcastRecord, BroadcastFilter, boolean, int]
             Object filterObj = chain.getArg(1);
             if (filterObj == null) {
+                return null;
+            }
+            // 类型校验：必须是 BroadcastFilter 或其子类，否则跳过
+            if (!ClassConstants.BroadcastFilter.equals(filterObj.getClass().getName())) {
                 return null;
             }
             return filterObj;
