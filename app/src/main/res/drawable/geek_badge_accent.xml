@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS 徽章背景：薰衣草紫 soft 底 + 紫色字 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/geek_accent_soft" />
+    <corners android:radius="@dimen/geek_radius_full" />
+    <padding
+        android:bottom="3dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="3dp" />
+</shape>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: Spinner 下拉项 - surface elevated 卡片化文字 -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/geek_bg_elevated"
     android:gravity="center_horizontal"
-    android:padding="10dp"
-    android:textColor="#6d6d6d"
-    android:textSize="18sp">
-
-</TextView>
+    android:padding="@dimen/geek_space_3"
+    android:textColor="@color/geek_text_primary"
+    android:textSize="@dimen/geek_text_body" />

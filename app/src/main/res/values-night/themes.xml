@@ -1,16 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.NoActive" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/black_900</item>
-        <item name="colorPrimaryVariant">@color/white_100</item>
-        <item name="colorOnPrimary">@color/black_900</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/white</item>
-        <item name="colorSecondaryVariant">@color/white</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
-        <!-- Customize your theme here. -->
+    <!-- GeekOS Design: 深色优先，夜间模式与默认一致 -->
+    <style name="Theme.NoActive" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/geek_bg_surface</item>
+        <item name="colorPrimaryVariant">@color/geek_bg_surface_variant</item>
+        <item name="colorOnPrimary">@color/geek_text_primary</item>
+        <item name="colorSecondary">@color/geek_accent</item>
+        <item name="colorSecondaryVariant">@color/geek_accent_strong</item>
+        <item name="colorOnSecondary">@color/geek_text_on_primary</item>
+        <item name="android:windowBackground">@color/geek_bg_base</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/geek_bg_base</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:textColorPrimary">@color/geek_text_primary</item>
+        <item name="android:textColorSecondary">@color/geek_text_secondary</item>
+        <item name="android:textColorTertiary">@color/geek_text_tertiary</item>
+        <item name="colorSurface">@color/geek_bg_surface</item>
+        <item name="colorOnSurface">@color/geek_text_primary</item>
+        <item name="colorError">@color/geek_danger</item>
+        <item name="colorOnError">@color/geek_text_primary</item>
     </style>
 </resources>

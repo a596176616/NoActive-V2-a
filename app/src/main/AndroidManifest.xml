@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cn.myflv.noactive">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -29,6 +28,10 @@
             android:exported="false"
             android:theme="@style/Theme.NoActive.NoActionBar" />
         <activity
+            android:name=".LogActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NoActive.NoActionBar" />
+        <activity
             android:name=".SubActivity"
             android:exported="false"
             android:theme="@style/Theme.NoActive.NoActionBar" />
@@ -42,19 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="xposedmodule"
-            android:value="true" />
-        <meta-data
-            android:name="xposedscope"
-            android:resource="@array/xposed_scope" />
-        <meta-data
-            android:name="xposeddescription"
-            android:value="@string/app_description" />
-        <meta-data
-            android:name="xposedminversion"
-            android:value="82" />
     </application>
 
 </manifest>

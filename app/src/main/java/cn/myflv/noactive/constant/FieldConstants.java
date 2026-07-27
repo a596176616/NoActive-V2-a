@@ -41,6 +41,9 @@ public interface FieldConstants {
     String mProcLock = "mProcLock";
     String mActiveUids = "mActiveUids";
     String PROCESS_STATE_BOUND_TOP = "PROCESS_STATE_BOUND_TOP";
+    // AOSP ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND = 5,
+    // 用于 isAppForeground(uid) 等价判定（前台服务/活动状态）
+    String PROCESS_STATE_IMPORTANT_FOREGROUND = "PROCESS_STATE_IMPORTANT_FOREGROUND";
     String idle = "idle";
     String mOwnerUid = "mOwnerUid";
     String mDisabled = "mDisabled";

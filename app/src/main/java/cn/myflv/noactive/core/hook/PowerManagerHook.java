@@ -6,7 +6,7 @@ import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.PowerManagerService;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 /**
  * PMS启动Hook.
@@ -39,13 +39,14 @@ public class PowerManagerHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void afterMethod(MethodHookParam param) throws Throwable {
-                PowerManagerService powerManagerService = new PowerManagerService(param.thisObject);
+            protected Object afterMethod(XposedInterface.Chain chain, Object result) throws Throwable {
+                PowerManagerService powerManagerService = new PowerManagerService(chain.getThisObject());
                 // 存进数据类
                 memData.setPowerManagerService(powerManagerService);
+                return result;
             }
         };
     }

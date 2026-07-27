@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 日志查看页 - 透明 Toolbar + 卡片化日志容器 + 等宽字体 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/geek_bg_base"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/log_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginStart="@dimen/geek_space_3"
+        android:layout_marginEnd="@dimen/geek_space_3"
+        android:background="@android:color/transparent"
+        app:popupTheme="@style/Theme.NoActive.PopupOverlay"
+        app:title="@string/log_viewer"
+        app:titleTextAppearance="@style/Toolbar.TitleText"
+        app:titleTextColor="@color/geek_text_primary" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="@dimen/geek_space_3"
+        android:paddingBottom="@dimen/geek_space_4">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/geek_bg_surface"
+            app:cardCornerRadius="@dimen/geek_radius_xl"
+            app:cardElevation="@dimen/geek_elevation_1"
+            app:strokeColor="@color/geek_border"
+            app:strokeWidth="1dp">
+
+            <ScrollView
+                android:id="@+id/log_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:fillViewport="true">
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="horizontal">
+
+                    <TextView
+                        android:id="@+id/log_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:padding="@dimen/geek_space_4"
+                        android:textColor="@color/geek_text_primary"
+                        android:textIsSelectable="true"
+                        android:textSize="@dimen/geek_text_mono"
+                        android:typeface="monospace" />
+
+                </HorizontalScrollView>
+            </ScrollView>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
+
+</LinearLayout>

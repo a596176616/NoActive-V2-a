@@ -28,7 +28,7 @@ public interface ClassConstants {
     String ProfilerInfo = "android.app.ProfilerInfo";
     String SleepModeControllerNew = "com.miui.powerkeeper.statemachine.SleepModeControllerNew";
     String LocalServices = "com.android.server.LocalServices";
-    String PowerManagerService = " com.android.server.power.PowerManagerService";
+    String PowerManagerService = "com.android.server.power.PowerManagerService";
     String ProcessManager = "miui.process.ProcessManager";
     String ProcessConfig = "miui.process.ProcessConfig";
 
@@ -51,7 +51,15 @@ public interface ClassConstants {
     String FreezeBinder = "com.miui.powerkeeper.millet.FreezeBinder";
     String DisplayPowerController = "com.android.server.display.DisplayPowerController";
     String DeviceIdleController = "com.android.server.DeviceIdleController";
-    String DeviceIdleControllerBinderService = "com.android.server.DeviceIdleController.BinderService";
+    String DeviceIdleControllerBinderService = "com.android.server.DeviceIdleController$BinderService";
     String AlarmManagerService = "com.android.server.alarm.AlarmManagerService";
     String AlarmManagerService_R = "com.android.server.AlarmManagerService";
+
+    // v0.9.10 port: SDK 34+/36 新增类（Hook 签名适配）
+    String ActivityId = "android.app.assist.ActivityId";
+    String ExecutorService = "java.util.concurrent.ExecutorService";
+    String BroadcastProcessQueue = "com.android.server.am.BroadcastProcessQueue";
+    String BroadcastQueueImpl = "com.android.server.am.BroadcastQueueImpl";
+    String BroadcastQueueModernImpl = "com.android.server.am.BroadcastQueueModernImpl";
+    String TimeoutRecord = "com.android.internal.os.TimeoutRecord";
 }

@@ -6,7 +6,7 @@ import cn.myflv.noactive.core.entity.MemData;
 import cn.myflv.noactive.core.hook.base.AbstractMethodHook;
 import cn.myflv.noactive.core.hook.base.MethodHook;
 import cn.myflv.noactive.core.server.ActivityManagerService;
-import de.robv.android.xposed.XC_MethodHook;
+import io.github.libxposed.api.XposedInterface;
 
 public class ActivityManagerHook extends MethodHook {
 
@@ -33,11 +33,11 @@ public class ActivityManagerHook extends MethodHook {
     }
 
     @Override
-    public XC_MethodHook getTargetHook() {
+    public XposedInterface.Hooker getTargetHook() {
         return new AbstractMethodHook() {
             @Override
-            protected void beforeMethod(MethodHookParam param) throws Throwable {
-                ActivityManagerService activityManagerService = new ActivityManagerService(param.thisObject);
+            protected void beforeMethod(XposedInterface.Chain chain) throws Throwable {
+                ActivityManagerService activityManagerService = new ActivityManagerService(chain.getThisObject());
                 memData.setActivityManagerService(activityManagerService);
             }
         };

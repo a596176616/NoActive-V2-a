@@ -21,20 +21,22 @@ import cn.myflv.noactive.core.hook.miui.BinderTransHook;
 import cn.myflv.noactive.core.hook.miui.GreezeHook;
 import cn.myflv.noactive.core.utils.FreezeUtils;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 
 /**
- * 系统框架Hook.
+ * 系统框架 Hook.
  */
 public class AndroidHook extends AbstractAppHook {
 
-    public AndroidHook(XC_LoadPackage.LoadPackageParam loadPackageParam) {
+    public AndroidHook(PackageLoadedParam loadPackageParam) {
         super(loadPackageParam);
     }
 
     @Override
     public String getTargetPackageName() {
-        return "android";
+        // LSPosed API 102: system_server 的包名为 "system"（旧 API 时代的 "android" 已废弃）
+        // 参考 https://docs.lsposed.org/release/api_changes
+        return "system";
     }
 
     @Override
@@ -44,8 +46,8 @@ public class AndroidHook extends AbstractAppHook {
 
     @Override
     public void hook() {
-        // 类加载器
-        ClassLoader classLoader = packageParam.classLoader;
+        // 类加载器（API 102: getDefaultClassLoader() 取代旧 LoadPackageParam.classLoader 字段）
+        ClassLoader classLoader = packageParam.getDefaultClassLoader();
 
         // 加载内存配置
         MemData memData = new MemData();

@@ -45,5 +45,18 @@
     <string name="all_app">所有应用</string>
     <string name="battery_opt">电池优化</string>
 
+    <string name="log_viewer">日志</string>
+    <string name="log_view">查看日志</string>
+    <string name="log_view_tips">查看模块运行日志（current.log / last.log）</string>
+    <string name="log_refresh">刷新</string>
+    <string name="log_toggle">切换 current/last</string>
+    <string name="log_clear">清空当前日志</string>
+    <string name="log_empty">日志为空</string>
+    <string name="log_cleared">日志已清空</string>
+    <string name="log_export">导出日志</string>
+    <string name="log_export_pick_dir">选择导出目录</string>
+    <string name="log_exported">日志已导出: %1$s</string>
+    <string name="log_export_failed">导出失败: %1$s</string>
+    <string name="log_export_empty">日志为空，无需导出</string>
 
 </resources>

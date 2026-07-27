@@ -6,13 +6,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import cn.myflv.noactive.constant.ClassConstants;
 import cn.myflv.noactive.constant.MethodConstants;
-import de.robv.android.xposed.XposedHelpers;
 
 public class FreezerConfig {
 
@@ -44,6 +49,8 @@ public class FreezerConfig {
     public final static String BootFreeze = "boot.freeze";
     public final static String BootFreezeDelay = "boot.freeze.delay";
     public final static String SuExcute = "su.excute";
+    // v0.9.10 port: 后台应用持久化文件，记录已冻结的应用 key（userId:packageName 格式）
+    public final static String backgroundConf = "background.conf";
     public final static String[] listenConfig = {whiteAppConfig, whiteProcessConfig,
             killProcessConfig, blackSystemAppConfig, directAppConfig, topAppConfig, socketAppConfig, idleAppConfig};
 
@@ -90,13 +97,24 @@ public class FreezerConfig {
     }
 
     public static boolean isAndroidApi(ClassLoader classLoader) {
-        Class<?> CachedAppOptimizer = XposedHelpers.findClass(ClassConstants.CachedAppOptimizer, classLoader);
-        return (boolean) XposedHelpers.callStaticMethod(CachedAppOptimizer, MethodConstants.isFreezerSupported);
+        // v0.9.10 port: SDK 34+ 上 isFreezerSupported 可能不存在或抛异常，失败时默认 V2 (cgroup v2 freezer)
+        // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
+        try {
+            Class<?> CachedAppOptimizer = Class.forName(ClassConstants.CachedAppOptimizer, false, classLoader);
+            Method isFreezerSupported = CachedAppOptimizer.getDeclaredMethod(MethodConstants.isFreezerSupported);
+            isFreezerSupported.setAccessible(true);
+            return (boolean) isFreezerSupported.invoke(null);
+        } catch (Throwable e) {
+            Log.i("isFreezerSupported not available on SDK=" + Build.VERSION.SDK_INT + ", default to V2 (cgroup v2 freezer)");
+            return true;
+        }
     }
 
     public static boolean isXiaoMiV1(ClassLoader classLoader) {
+        // API 102: XposedHelpers.findClassIfExists → Class.forName + try-catch
         try {
-            return XposedHelpers.findClassIfExists(ClassConstants.GreezeManagerService, classLoader) != null;
+            Class.forName(ClassConstants.GreezeManagerService, false, classLoader);
+            return true;
         } catch (Throwable ignored) {
         }
         return false;
@@ -197,5 +215,156 @@ public class FreezerConfig {
         } catch (IOException e) {
             Log.e(file.getName() + " file create filed");
         }
+    }
+
+    // v0.9.10 port: 后台应用持久化（background.conf 读写）
+    // freezerAppSet 的 key 是 "userId:packageName" 格式，原样持久化，启动时恢复
+
+    /**
+     * 追加已冻结应用 key 到 background.conf.
+     */
+    public static synchronized void appendBackground(String key) {
+        appendBackground(ConfigDir, key);
+    }
+
+    /**
+     * 追加已冻结应用 key 到指定目录的 background.conf.
+     */
+    public static synchronized void appendBackground(String dir, String key) {
+        if (key == null || key.isEmpty()) {
+            return;
+        }
+        File configDir = new File(dir);
+        File backgroundFile = new File(dir, backgroundConf);
+        PrintWriter writer = null;
+        try {
+            if (!configDir.exists()) {
+                // v0.9.10 port fix (MINOR-21): 检查 mkdir 返回值，失败时显式日志
+                if (!configDir.mkdir()) {
+                    Log.e("background.conf append failed: config dir create failed: " + dir);
+                    return;
+                }
+            }
+            if (!backgroundFile.exists()) {
+                backgroundFile.createNewFile();
+            }
+            writer = new PrintWriter(new FileWriter(backgroundFile, true));
+            writer.println(key);
+        } catch (IOException e) {
+            Log.e("background.conf append failed: " + e.getMessage());
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+    }
+
+    /**
+     * 从 background.conf 移除指定已冻结应用 key（应用切回前台时调用）.
+     */
+    public static synchronized void removeBackground(String key) {
+        removeBackground(ConfigDir, key);
+    }
+
+    /**
+     * 从指定目录的 background.conf 移除指定已冻结应用 key.
+     */
+    public static synchronized void removeBackground(String dir, String key) {
+        if (key == null || key.isEmpty()) {
+            return;
+        }
+        File backgroundFile = new File(dir, backgroundConf);
+        if (!backgroundFile.exists()) {
+            return;
+        }
+        // v0.9.10 port fix (MINOR-14): 临时文件 + rename 原子写入，避免进程崩溃损坏文件
+        File tempFile = new File(dir, backgroundConf + ".tmp");
+        List<String> remaining = new ArrayList<>();
+        BufferedReader reader = null;
+        PrintWriter writer = null;
+        try {
+            reader = new BufferedReader(new FileReader(backgroundFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().equals(key)) {
+                    remaining.add(line);
+                }
+            }
+            reader.close();
+            reader = null;
+            writer = new PrintWriter(new FileWriter(tempFile, false));
+            for (String entry : remaining) {
+                writer.println(entry);
+            }
+            writer.close();
+            writer = null;
+            // 同分区 rename 是原子操作，确保崩溃时不会留下截断的 background.conf
+            if (!tempFile.renameTo(backgroundFile)) {
+                // fallback：先删除原文件再 rename
+                if (backgroundFile.delete()) {
+                    if (!tempFile.renameTo(backgroundFile)) {
+                        Log.e("background.conf remove failed: rename fallback failed");
+                    }
+                } else {
+                    Log.e("background.conf remove failed: delete original failed");
+                }
+            }
+        } catch (IOException e) {
+            Log.e("background.conf remove failed: " + e.getMessage());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+            }
+            if (writer != null) {
+                writer.close();
+            }
+            // 清理可能的残留临时文件
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+    }
+
+    /**
+     * 加载已冻结应用 key 集合（启动时恢复持久化后台列表）.
+     */
+    public static Set<String> loadBackground() {
+        return loadBackground(ConfigDir);
+    }
+
+    /**
+     * 从指定目录的 background.conf 加载已冻结应用 key 集合（保留插入顺序）.
+     */
+    public static Set<String> loadBackground(String dir) {
+        Set<String> backgroundSet = new LinkedHashSet<>();
+        File backgroundFile = new File(dir, backgroundConf);
+        if (!backgroundFile.exists()) {
+            return backgroundSet;
+        }
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(backgroundFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                    continue;
+                }
+                backgroundSet.add(trimmed);
+            }
+        } catch (IOException e) {
+            Log.e("background.conf read failed: " + e.getMessage());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return backgroundSet;
     }
 }

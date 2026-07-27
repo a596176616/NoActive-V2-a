@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 开关滑块 (选中时薰衣草紫) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="25dp" />
+    <corners android:radius="@dimen/geek_radius_full" />
     <size
-            android:height="25dp"
-            android:width="25dp" />
-    <solid android:color="@android:color/white" />
+        android:height="25dp"
+        android:width="25dp" />
+    <solid android:color="@color/geek_text_primary" />
     <stroke
-            android:color="@android:color/transparent"
-            android:width="12dp" />
+        android:width="12dp"
+        android:color="@android:color/transparent" />
 </shape>

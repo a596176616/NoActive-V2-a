@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 左按钮按下态 (薰衣草紫 soft 高亮) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/whiteClick" />
-    <corners android:radius="60dp"/>
+    <solid android:color="@color/geek_accent_soft" />
+    <corners android:radius="@dimen/geek_radius_full" />
 </shape>

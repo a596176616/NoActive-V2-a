@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ===== Legacy compatibility (keep for older drawables) ===== -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -10,4 +11,55 @@
     <color name="black_900">#FF121212</color>
     <color name="black_100">#FFF5F5F5</color>
     <color name="white_100">#FF1F1F1F</color>
+
+    <!-- ============================================================
+         GeekOS Design System — Design Tokens
+         Deep-first, lavender accent, semantic clarity.
+         ============================================================ -->
+
+    <!-- 基底色 Surface stack (深色优先) -->
+    <color name="geek_bg_base">#FF0A0A0F</color>
+    <color name="geek_bg_surface">#FF1A1A1F</color>
+    <color name="geek_bg_surface_variant">#FF2A2A2F</color>
+    <color name="geek_bg_elevated">#FF3A3A3F</color>
+
+    <!-- 文字色阶 -->
+    <color name="geek_text_primary">#FFF5F5F5</color>
+    <color name="geek_text_secondary">#FF9CA3AF</color>
+    <color name="geek_text_tertiary">#FF6B7280</color>
+    <color name="geek_text_on_primary">#FF1A1A1F</color>
+
+    <!-- 品牌色 薰衣草紫 -->
+    <color name="geek_accent">#FFA78BFA</color>
+    <color name="geek_accent_soft">#26A78BFA</color> <!-- 15% opacity -->
+    <color name="geek_accent_soft_8">#14A78BFA</color>
+    <color name="geek_accent_strong">#FF8B5CF6</color>
+
+    <!-- 语义色 -->
+    <color name="geek_success">#FF22C55E</color>
+    <color name="geek_warning">#FFF59E0B</color>
+    <color name="geek_danger">#FFEF4444</color>
+    <color name="geek_info">#FF60A5FA</color>
+
+    <!-- 语义色 soft (15% 透明度，用于徽章背景) -->
+    <color name="geek_success_soft">#2622C55E</color>
+    <color name="geek_warning_soft">#26F59E0B</color>
+    <color name="geek_danger_soft">#26EF4444</color>
+    <color name="geek_info_soft">#2660A5FA</color>
+
+    <!-- 边框与分割 -->
+    <color name="geek_border">#14FFFFFF</color> <!-- 8% white -->
+    <color name="geek_divider">#0AFFFFFF</color> <!-- 4% white -->
+
+    <!-- ===== Light variant (用于 DayNight 浅色模式) ===== -->
+    <color name="geek_bg_base_light">#FFFAFAFC</color>
+    <color name="geek_bg_surface_light">#FFFFFFFF</color>
+    <color name="geek_bg_surface_variant_light">#FFF1F2F5</color>
+    <color name="geek_bg_elevated_light">#FFE5E7EB</color>
+    <color name="geek_text_primary_light">#FF0A0A0F</color>
+    <color name="geek_text_secondary_light">#FF4B5563</color>
+    <color name="geek_text_tertiary_light">#FF9CA3AF</color>
+    <color name="geek_text_on_primary_light">#FFFFFFFF</color>
+    <color name="geek_border_light">#14000000</color>
+    <color name="geek_divider_light">#0A000000</color>
 </resources>

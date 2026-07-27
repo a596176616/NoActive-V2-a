@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 白名单徽章 → info soft 底 + info 字 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:useLevel="false">
-    <solid android:color="?attr/colorPrimary" />
-    <stroke
-        android:width="0.1dip"
-        android:color="#0099ff" />
-    <size
-        android:width="20dp"
-        android:height="10dp" />
-    <corners android:radius="10dp" />
+    android:shape="rectangle">
+    <solid android:color="@color/geek_info_soft" />
+    <corners android:radius="@dimen/geek_radius_full" />
+    <padding
+        android:bottom="3dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="3dp" />
 </shape>

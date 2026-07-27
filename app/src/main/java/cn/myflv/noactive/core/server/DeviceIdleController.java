@@ -10,7 +10,7 @@ import cn.myflv.noactive.constant.CommonConstants;
 import cn.myflv.noactive.constant.FieldConstants;
 import cn.myflv.noactive.constant.MethodConstants;
 import cn.myflv.noactive.core.utils.Log;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -23,7 +23,7 @@ public class DeviceIdleController {
 
     public DeviceIdleController(Object instance) {
         this.instance = instance;
-        STATE_IDLE = XposedHelpers.getStaticIntField(instance.getClass(), FieldConstants.STATE_IDLE);
+        STATE_IDLE = ReflectionUtils.getStaticIntField(instance.getClass(), FieldConstants.STATE_IDLE);
     }
 
     public void deepDoze() {
@@ -51,36 +51,36 @@ public class DeviceIdleController {
         if (!idle) {
             return;
         }
-        XposedHelpers.callMethod(instance, MethodConstants.exitForceIdleLocked);
+        ReflectionUtils.callMethod(instance, MethodConstants.exitForceIdleLocked);
         idle = false;
         Log.d("exit deep doze");
     }
 
     public void stepIdleStateLocked() {
-        XposedHelpers.callMethod(instance, MethodConstants.stepIdleStateLocked, CommonConstants.NOACTIVE_PACKAGE_NAME);
+        ReflectionUtils.callMethod(instance, MethodConstants.stepIdleStateLocked, CommonConstants.NOACTIVE_PACKAGE_NAME);
     }
 
     public void setDeepEnabled(boolean enabled) {
-        XposedHelpers.setBooleanField(instance, FieldConstants.mDeepEnabled, enabled);
+        ReflectionUtils.setBooleanField(instance, FieldConstants.mDeepEnabled, enabled);
     }
 
     public void setForceIdle(boolean forceIdle) {
-        XposedHelpers.setBooleanField(instance, FieldConstants.mForceIdle, forceIdle);
+        ReflectionUtils.setBooleanField(instance, FieldConstants.mForceIdle, forceIdle);
     }
 
     public void becomeInactiveIfAppropriateLocked() {
-        XposedHelpers.callMethod(instance, MethodConstants.becomeInactiveIfAppropriateLocked);
+        ReflectionUtils.callMethod(instance, MethodConstants.becomeInactiveIfAppropriateLocked);
     }
 
     public int getCurState() {
-        return XposedHelpers.getIntField(instance, FieldConstants.mState);
+        return ReflectionUtils.getIntField(instance, FieldConstants.mState);
     }
 
 
     public Set<String> getWhiteList() {
         synchronized (instance) {
-            Object mPowerSaveWhitelistUserApps = XposedHelpers.getObjectField(instance, FieldConstants.mPowerSaveWhitelistUserApps);
-            Set<?> whiteSet = (Set<?>) XposedHelpers.callMethod(mPowerSaveWhitelistUserApps, MethodConstants.keySet);
+            Object mPowerSaveWhitelistUserApps = ReflectionUtils.getObjectField(instance, FieldConstants.mPowerSaveWhitelistUserApps);
+            Set<?> whiteSet = (Set<?>) ReflectionUtils.callMethod(mPowerSaveWhitelistUserApps, MethodConstants.keySet);
             Set<String> result = new HashSet<>();
             for (Object o : whiteSet) {
                 if (o == null) {
@@ -97,16 +97,26 @@ public class DeviceIdleController {
         pkgNames.forEach(pkgName -> Log.d("power white list add " + pkgName));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             for (String pkgName : pkgNames) {
-                XposedHelpers.callMethod(instance, MethodConstants.addPowerSaveWhitelistAppInternal, pkgName);
+                ReflectionUtils.callMethod(instance, MethodConstants.addPowerSaveWhitelistAppInternal, pkgName);
             }
         } else {
-            XposedHelpers.callMethod(instance, MethodConstants.addPowerSaveWhitelistAppsInternal, pkgNames);
+            ReflectionUtils.callMethod(instance, MethodConstants.addPowerSaveWhitelistAppsInternal, pkgNames);
         }
     }
 
     public void removeWhiteList(String pkgName) {
         Log.d("power white list remove " + pkgName);
-        XposedHelpers.callMethod(instance, MethodConstants.removePowerSaveWhitelistAppInternal, pkgName);
+        try {
+            ReflectionUtils.callMethod(instance, MethodConstants.removePowerSaveWhitelistAppInternal, pkgName);
+        } catch (Throwable e) {
+            // 诊断: 上层 catch 会把 InvocationTargetException 包装成 RuntimeException 并丢弃 cause.
+            // 这里直接输出 cause 类名 + message，便于从日志判断根因
+            // (例如 MIUI/HyperOS Cheeck 拦截 / 方法签名变化 / 权限不足).
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            Throwable rootCause = cause.getCause() != null ? cause.getCause() : cause;
+            String causeInfo = rootCause.getClass().getName() + ": " + rootCause.getMessage();
+            Log.w("removeWhiteList " + pkgName + " failed [" + e.getClass().getSimpleName() + "] root=" + causeInfo);
+        }
     }
 
 }

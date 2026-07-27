@@ -3,7 +3,7 @@ package cn.myflv.noactive.core.server;
 import android.os.IBinder;
 
 import cn.myflv.noactive.constant.FieldConstants;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -17,14 +17,14 @@ public class WakeLock {
 
     public WakeLock(Object wakeLock) {
         instance = wakeLock;
-        this.packageName = (String) XposedHelpers.getObjectField(wakeLock, FieldConstants.mPackageName);
-        this.tag = (String) XposedHelpers.getObjectField(wakeLock, FieldConstants.mTag);
-        this.flags = XposedHelpers.getIntField(wakeLock, FieldConstants.mFlags);
-        this.lock = (IBinder) XposedHelpers.getObjectField(wakeLock, FieldConstants.mLock);
-        this.uid = XposedHelpers.getIntField(wakeLock, FieldConstants.mOwnerUid);
+        this.packageName = (String) ReflectionUtils.getObjectField(wakeLock, FieldConstants.mPackageName);
+        this.tag = (String) ReflectionUtils.getObjectField(wakeLock, FieldConstants.mTag);
+        this.flags = ReflectionUtils.getIntField(wakeLock, FieldConstants.mFlags);
+        this.lock = (IBinder) ReflectionUtils.getObjectField(wakeLock, FieldConstants.mLock);
+        this.uid = ReflectionUtils.getIntField(wakeLock, FieldConstants.mOwnerUid);
     }
 
     public void setDisabled(boolean disabled) {
-        XposedHelpers.setObjectField(instance, FieldConstants.mDisabled, disabled);
+        ReflectionUtils.setObjectField(instance, FieldConstants.mDisabled, disabled);
     }
 }

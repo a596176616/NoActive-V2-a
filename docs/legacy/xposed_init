@@ -1,0 +1,6 @@
+# 原始内容（保留作为参考）
+# 来源：app/src/main/assets/xposed_init（在 API 102 重构前）
+# 迁移日期：2026-07-20
+# 迁移原因：API 102 不再读取 assets/xposed_init，改由 META-INF/xposed/java_init.list 注册模块入口
+
+cn.myflv.noactive.core.HandleHook

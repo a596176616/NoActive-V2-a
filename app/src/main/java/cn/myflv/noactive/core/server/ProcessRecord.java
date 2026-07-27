@@ -5,7 +5,7 @@ import android.os.Build;
 
 import cn.myflv.noactive.constant.FieldConstants;
 import cn.myflv.noactive.utils.PackageUtils;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -22,21 +22,21 @@ public class ProcessRecord {
     public ProcessRecord(Object processRecord) {
         this.processRecord = processRecord;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            this.pid = XposedHelpers.getIntField(processRecord, FieldConstants.mPid);
+            this.pid = ReflectionUtils.getIntField(processRecord, FieldConstants.mPid);
         } else {
-            this.pid = XposedHelpers.getIntField(processRecord, FieldConstants.pid);
+            this.pid = ReflectionUtils.getIntField(processRecord, FieldConstants.pid);
         }
-        this.uid = XposedHelpers.getIntField(processRecord, FieldConstants.uid);
+        this.uid = ReflectionUtils.getIntField(processRecord, FieldConstants.uid);
 
-        this.userId = XposedHelpers.getIntField(processRecord, FieldConstants.userId);
-        this.applicationInfo = (ApplicationInfo) XposedHelpers.getObjectField(processRecord, FieldConstants.info);
+        this.userId = ReflectionUtils.getIntField(processRecord, FieldConstants.userId);
+        this.applicationInfo = (ApplicationInfo) ReflectionUtils.getObjectField(processRecord, FieldConstants.info);
         this.packageName = applicationInfo.packageName;
-        String processName = (String) XposedHelpers.getObjectField(processRecord, FieldConstants.processName);
+        String processName = (String) ReflectionUtils.getObjectField(processRecord, FieldConstants.processName);
         this.processName = PackageUtils.absoluteProcessName(packageName, processName);
     }
 
     public void setCurAdj(int curAdj) {
-        XposedHelpers.setIntField(processRecord, FieldConstants.curAdj, curAdj);
+        ReflectionUtils.setIntField(processRecord, FieldConstants.curAdj, curAdj);
     }
 
     public boolean isSandboxProcess() {

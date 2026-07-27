@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 兼容旧引用的搜索栏背景，重定向到新 token -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="?attr/colorPrimaryVariant" />
+    <solid android:color="@color/geek_bg_surface_variant" />
     <padding
-        android:bottom="10dp"
-        android:left="15dp"
-        android:right="10dp"
-        android:top="10dp" />
-    <corners android:radius="30dp" />
+        android:bottom="@dimen/geek_space_3"
+        android:left="@dimen/geek_space_4"
+        android:right="@dimen/geek_space_4"
+        android:top="@dimen/geek_space_3" />
+    <corners android:radius="@dimen/geek_radius_full" />
 </shape>

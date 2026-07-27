@@ -4,11 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    namespace = "cn.fkj233.miui"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 36
     }
 
     buildTypes {
@@ -32,5 +33,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.3.0")
+    implementation("androidx.annotation:annotation:1.10.0")
 }

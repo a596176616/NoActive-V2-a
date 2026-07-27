@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GeekOS: 右按钮按下态 (薰衣草紫主色) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#0d7AEC" />
-    <corners android:radius="60dp"/>
+    <solid android:color="@color/geek_accent" />
+    <corners android:radius="@dimen/geek_radius_full" />
 </shape>

@@ -1,7 +1,7 @@
 package cn.myflv.noactive.core.server;
 
 import cn.myflv.noactive.constant.FieldConstants;
-import de.robv.android.xposed.XposedHelpers;
+import cn.myflv.noactive.utils.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -12,14 +12,14 @@ public class ReceiverList {
     public ReceiverList(Object receiverList) {
         this.receiverList = receiverList;
         try {
-            this.processRecord = new ProcessRecord(XposedHelpers.getObjectField(receiverList, FieldConstants.app));
+            this.processRecord = new ProcessRecord(ReflectionUtils.getObjectField(receiverList, FieldConstants.app));
         } catch (Exception ignored) {
         }
     }
 
 
     public void clear() {
-        XposedHelpers.setObjectField(receiverList, FieldConstants.app, null);
+        ReflectionUtils.setObjectField(receiverList, FieldConstants.app, null);
     }
 
 

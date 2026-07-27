@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.myflv.noactive.FreezerInterface;
@@ -16,7 +17,6 @@ import cn.myflv.noactive.core.error.FreezeFailedException;
 import cn.myflv.noactive.core.error.UnKnowException;
 import cn.myflv.noactive.core.server.ProcessRecord;
 import cn.myflv.noactive.utils.BaseFreezeUtils;
-import de.robv.android.xposed.XposedHelpers;
 
 public class FreezeUtils {
     private final static int BINDER_FREEZE_TRY = 3;
@@ -28,6 +28,8 @@ public class FreezeUtils {
     private final MemData memData;
     private final boolean suExecute;
     private FreezerInterface freezerInterface = null;
+    // F3A-054 fix: 记录 ServiceConnection 绑定状态，重连前先 unbind 旧的，避免累积泄露
+    private boolean bound = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -38,6 +40,7 @@ public class FreezeUtils {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             freezerInterface = null;
+            // F3A-054 fix: 服务断开时 bound 状态由系统自动管理，下次 connectIfNeed 会显式 unbind 再重连
             Log.w("su disconnected");
         }
     };
@@ -45,6 +48,8 @@ public class FreezeUtils {
     public FreezeUtils(ClassLoader classLoader, MemData memData) {
         this.classLoader = classLoader;
         this.memData = memData;
+        // v0.9.10 port: 初始化 BaseFreezeUtils 的 classLoader，使 V2 写入失败时能 fallback 到系统 API
+        BaseFreezeUtils.setClassLoader(classLoader);
         String freezerVersion = FreezerConfig.getFreezerVersion(classLoader);
         switch (freezerVersion) {
             case FreezerConfig.API:
@@ -142,9 +147,18 @@ public class FreezeUtils {
         int pid = processRecord.getPid();
         int uid = processRecord.getUid();
         ThreadUtils.runNoThrow(() -> {
-            Class<?> Process = XposedHelpers.findClass(ClassConstants.Process, classLoader);
-            XposedHelpers.callStaticMethod(Process, MethodConstants.setProcessFrozen, pid, uid, frozen);
-            Log.d((frozen ? "freeze" : "unfreeze") + " " + processRecord.getProcessNameWithUser());
+            // v0.9.10 port fix (MINOR-09): 显式 try-catch + Log.e，
+            // 避免 ThreadUtils.runNoThrow 静默吞掉 SELinux 拦截 / 方法签名变更等异常
+            // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
+            try {
+                Class<?> Process = Class.forName(ClassConstants.Process, false, classLoader);
+                Method setProcessFrozen = Process.getDeclaredMethod(MethodConstants.setProcessFrozen, int.class, int.class, boolean.class);
+                setProcessFrozen.setAccessible(true);
+                setProcessFrozen.invoke(null, pid, uid, frozen);
+                Log.d((frozen ? "freeze" : "unfreeze") + " " + processRecord.getProcessNameWithUser());
+            } catch (Throwable throwable) {
+                Log.e("setProcessFrozen failed (pid=" + pid + ", uid=" + uid + ", frozen=" + frozen + ")", throwable);
+            }
         });
 
     }
@@ -153,13 +167,20 @@ public class FreezeUtils {
     public void freezeBinder(ProcessRecord processRecord, boolean frozen) {
         int pid = processRecord.getPid();
         ThreadUtils.runNoThrow(() -> {
-            Class<?> CachedAppOptimizer = XposedHelpers.findClass(ClassConstants.CachedAppOptimizer, classLoader);
-            for (int i = 0; i < BINDER_FREEZE_TRY; i++) {
-                int result = (int) XposedHelpers.callStaticMethod(CachedAppOptimizer, MethodConstants.freezeBinder, pid, frozen);
-                if (result == 0) {
-                    Log.d((frozen ? "freeze" : "unfreeze") + " binder " + processRecord.getProcessNameWithUser());
-                    return;
+            // API 102: XposedHelpers.findClass + callStaticMethod → Class.forName + Method.invoke
+            try {
+                Class<?> CachedAppOptimizer = Class.forName(ClassConstants.CachedAppOptimizer, false, classLoader);
+                Method freezeBinderMethod = CachedAppOptimizer.getDeclaredMethod(MethodConstants.freezeBinder, int.class, boolean.class);
+                freezeBinderMethod.setAccessible(true);
+                for (int i = 0; i < BINDER_FREEZE_TRY; i++) {
+                    int result = (int) freezeBinderMethod.invoke(null, pid, frozen);
+                    if (result == 0) {
+                        Log.d((frozen ? "freeze" : "unfreeze") + " binder " + processRecord.getProcessNameWithUser());
+                        return;
+                    }
                 }
+            } catch (Throwable throwable) {
+                Log.e("freezeBinder failed (pid=" + pid + ", frozen=" + frozen + ")", throwable);
             }
         });
     }
@@ -175,7 +196,19 @@ public class FreezeUtils {
             if (memData.getActivityManagerService().getContext() == null) {
                 return;
             }
+            // F3A-054 fix: 重连前先 unbind 旧 ServiceConnection，避免累积泄露
+            // 场景：服务进程崩溃 → onServiceDisconnected 把 freezerInterface 置 null
+            //       → 下次 connectIfNeed 重连 → 若不先 unbind 旧 connection 会累积
+            if (bound) {
+                try {
+                    memData.getContext().unbindService(serviceConnection);
+                } catch (Throwable ignored) {
+                    // unbind 失败不阻断重连流程
+                }
+                bound = false;
+            }
             memData.getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            bound = true;
         } catch (Throwable throwable) {
             Log.e("su connect", throwable);
         }

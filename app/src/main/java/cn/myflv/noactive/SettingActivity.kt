@@ -78,6 +78,14 @@ class SettingActivity : MIUIActivity() {
                 TextWithSwitch(TextV(resources.getString(R.string.debug_log)), SwitchV("binding", defValue = isConfigOn(FreezerConfig.Debug)) {
                     setConfig(FreezerConfig.Debug, it)
                 })
+                TextSummary(
+                        text = resources.getString(R.string.log_view),
+                        tips = resources.getString(R.string.log_view_tips),
+                        onClickListener = {
+                            val intent = Intent()
+                            intent.setClass(activity, LogActivity::class.java)
+                            startActivity(intent)
+                        })
                 Line()
                 TitleText(resources.getString(R.string.developer))
                 Author(getImg(R.mipmap.ic_head)!!,
